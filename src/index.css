@@ -37,3 +37,60 @@ html {
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
+
+
+/* Refined admin typography: calm hierarchy, consistent rhythm and readable forms. */
+.admin-portal {
+  color: #172033;
+  letter-spacing: -0.008em;
+  font-feature-settings: "ss01" on;
+}
+.admin-portal .admin-shell { max-width: 1440px; }
+.admin-portal .admin-header {
+  box-shadow: 0 22px 55px -34px rgba(30, 27, 75, .72);
+  border: 1px solid rgba(255,255,255,.1);
+  border-bottom: 4px solid #fbbf24;
+}
+.admin-portal h1, .admin-portal h2, .admin-portal h3, .admin-portal h4 {
+  line-height: 1.2;
+  letter-spacing: -.035em;
+  text-wrap: balance;
+}
+.admin-portal p { line-height: 1.65; }
+.admin-portal button, .admin-portal input, .admin-portal select, .admin-portal textarea {
+  font-family: var(--font-sans);
+  letter-spacing: 0;
+}
+.admin-portal button { transition: transform .16s ease, box-shadow .16s ease, background-color .16s ease; }
+.admin-portal button:focus-visible, .admin-portal input:focus-visible,
+.admin-portal select:focus-visible, .admin-portal textarea:focus-visible {
+  outline: 3px solid rgba(129, 140, 248, .45);
+  outline-offset: 2px;
+}
+.admin-portal input, .admin-portal select, .admin-portal textarea { line-height: 1.55; }
+.admin-portal textarea { resize: vertical; }
+.admin-portal .math-preview-panel {
+  padding: 1rem 1.1rem;
+  background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+  border: 1px solid #dbe3ef;
+  border-radius: 1rem;
+  color: #172033;
+  overflow-x: auto;
+}
+.admin-portal .math-preview-label {
+  margin-bottom: .65rem;
+  color: #64748b;
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.math-text { min-width: 0; overflow-wrap: anywhere; }
+.math-text mjx-container { max-width: 100%; overflow-x: auto; overflow-y: hidden; }
+.math-text mjx-container[display="true"] { margin: .85rem 0 !important; }
+.math-text mjx-math { color: inherit; }
+@media (max-width: 640px) {
+  .admin-portal { font-size: 14px; }
+  .admin-portal .admin-header { border-radius: 1.25rem; padding: 1.25rem; }
+  .math-text mjx-container { font-size: 100% !important; }
+}
