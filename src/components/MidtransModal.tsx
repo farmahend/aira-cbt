@@ -1,19 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { PackageItem } from '../types';
-import { formatRupiah, addSubscription, getStoredConfig, getStoredPackages } from '../utils/storage';
-import {
-  X,
-  ShieldCheck,
-  QrCode,
-  CreditCard,
-  Building2,
-  Copy,
-  CheckCircle,
-  Clock,
-  ArrowRight,
-  Sparkles,
-  Download
-} from 'lucide-react';
+import { formatRupiah } from '../utils/storage';
+import { X, ShieldAlert } from 'lucide-react';
 
 interface MidtransModalProps {
   packageItem: PackageItem | null;
@@ -26,350 +14,38 @@ export const MidtransModal: React.FC<MidtransModalProps> = ({
   packageItem,
   isOpen,
   onClose,
-  onPaymentSuccess,
 }) => {
-  const [selectedMethod, setSelectedMethod] = useState<'qris' | 'va_bca' | 'va_mandiri' | 'va_bri'>('qris');
-  const [copied, setCopied] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [confirmedOrderId, setConfirmedOrderId] = useState('');
-  const [timeLeft, setTimeLeft] = useState(900); // 15 mins
-  const config = getStoredConfig();
-  const allStoredPackages = getStoredPackages();
-
-  useEffect(() => {
-    if (!isOpen) {
-      setIsSuccess(false);
-      setIsProcessing(false);
-      setTimeLeft(900);
-      return;
-    }
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [isOpen]);
-
   if (!isOpen || !packageItem) return null;
-
-  const vaNumbers = {
-    va_bca: '89102-0812-9921-3829',
-    va_mandiri: '88721-0091-2391-4820',
-    va_bri: '10293-8192-3847-1920'
-  };
-
-  const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const formatTimer = (sec: number) => {
-    const m = Math.floor(sec / 60);
-    const s = sec % 60;
-    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-  };
-
-  const handleSimulatePayment = () => {
-    setIsProcessing(true);
-    setTimeout(() => {
-      const sub = addSubscription(
-        packageItem,
-        selectedMethod.toUpperCase().replace('_', ' ')
-      );
-      setConfirmedOrderId(sub.orderId);
-      setIsProcessing(false);
-      setIsSuccess(true);
-      onPaymentSuccess(sub.id);
-    }, 1200);
-  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs overflow-y-auto">
-      <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-purple-100 overflow-hidden my-8">
-        
-        {/* Header Midtrans style */}
-        <div className="bg-gradient-to-r from-purple-900 via-purple-950 to-slate-900 text-white p-5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="px-2.5 py-1 bg-white/10 rounded-md text-[11px] font-bold tracking-wider text-amber-400 uppercase">
-              Midtrans Snap
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-sm font-bold text-white">Pembayaran Aira Bimbel</h3>
-                <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-500/40">
-                  ● AKTIF ({config.midtransEnvironment === 'production' ? 'PROD' : 'SANDBOX'})
-                </span>
-              </div>
-              <p className="text-[11px] text-purple-200">Gateway Pembayaran Terenkripsi 256-bit • Otomatis Aktif</p>
-            </div>
+      <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-amber-200 overflow-hidden my-8">
+        <div className="bg-slate-900 text-white p-5 flex items-center justify-between">
+          <div>
+            <h3 className="text-sm font-bold">Pembayaran Aira Bimbel</h3>
+            <p className="text-[11px] text-slate-300">Status gateway: belum terhubung</p>
           </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-lg text-purple-200 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
-          >
+          <button onClick={onClose} aria-label="Tutup" className="p-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/10">
             <X className="w-5 h-5" />
           </button>
         </div>
-
-        {/* Content */}
-        {!isSuccess ? (
-          <div className="p-6 space-y-6">
-            
-            {/* Order Summary & 60-day reminder */}
-            <div className="p-4 bg-purple-50 rounded-xl border border-purple-100 flex items-center justify-between">
-              <div className="space-y-1">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[11px] font-bold text-purple-800 uppercase tracking-wide">
-                    {packageItem.grade === 'SEMUA' ? 'Semua Jenjang' : `Jenjang ${packageItem.grade}`}
-                  </span>
-                  {packageItem.packageType === 'bundle' && (
-                    <span className="px-1.5 py-0.5 rounded bg-amber-400 text-purple-950 text-[10px] font-black uppercase shadow-xs">
-                      🎁 Bundle Hemat
-                    </span>
-                  )}
-                </div>
-                <h4 className="text-sm font-bold text-slate-900">{packageItem.title}</h4>
-                
-                {/* Specific Bundled Packages List */}
-                {packageItem.bundledPackageIds && packageItem.bundledPackageIds.length > 0 ? (
-                  <div className="pt-1">
-                    <span className="text-[10px] font-bold text-amber-900 block mb-0.5">Mencakup Paket:</span>
-                    <div className="flex flex-wrap gap-1">
-                      {packageItem.bundledPackageIds.map((bId) => {
-                        const bp = allStoredPackages.find(p => p.id === bId);
-                        return bp ? (
-                          <span key={bId} className="px-1.5 py-0.5 bg-white border border-purple-200 rounded text-[10px] font-semibold text-purple-900">
-                            [{bp.grade}] {bp.title}
-                          </span>
-                        ) : null;
-                      })}
-                    </div>
-                  </div>
-                ) : packageItem.bundledGrades && packageItem.bundledGrades.length > 0 ? (
-                  <div className="text-[11px] text-amber-900 font-semibold mt-0.5">
-                    Termasuk Sekaligus: Jenjang {packageItem.bundledGrades.join(' + ')}
-                  </div>
-                ) : null}
-
-                <div className="flex items-center gap-2 mt-1 text-xs text-purple-900 font-medium">
-                  <Clock className="w-3.5 h-3.5 text-purple-700" />
-                  <span>Masa Aktif: <strong>60 Hari Penuh</strong></span>
-                </div>
-              </div>
-
-              <div className="text-right">
-                <span className="text-[11px] text-slate-500">Total Tagihan:</span>
-                {packageItem.originalPrice && packageItem.originalPrice > packageItem.price && (
-                  <div className="text-xs text-slate-400 line-through">
-                    {formatRupiah(packageItem.originalPrice)}
-                  </div>
-                )}
-                <div className="text-lg font-black text-purple-950 tabular-nums">
-                  {formatRupiah(packageItem.price)}
-                </div>
-                {packageItem.discountBadgeText && (
-                  <span className="text-[10px] font-black text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200">
-                    {packageItem.discountBadgeText}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {/* Countdown timer for payment */}
-            <div className="flex items-center justify-between text-xs text-slate-500 bg-amber-50/80 px-3 py-2 rounded-lg border border-amber-200">
-              <span className="flex items-center gap-1.5 font-medium text-amber-900">
-                <Clock className="w-4 h-4 text-amber-600" />
-                Selesaikan dalam:
-              </span>
-              <span className="font-mono font-bold text-amber-900 text-sm tabular-nums">
-                {formatTimer(timeLeft)}
-              </span>
-            </div>
-
-            {/* Payment Methods Selection */}
-            <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                Pilih Metode Pembayaran:
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setSelectedMethod('qris')}
-                  className={`p-3 rounded-xl border text-left flex items-center gap-2.5 transition-all ${
-                    selectedMethod === 'qris'
-                      ? 'border-purple-600 bg-purple-50/60 ring-2 ring-purple-200'
-                      : 'border-slate-200 hover:border-slate-300'
-                  }`}
-                >
-                  <QrCode className="w-5 h-5 text-purple-700 shrink-0" />
-                  <div>
-                    <div className="text-xs font-bold text-slate-900">QRIS Instant</div>
-                    <div className="text-[10px] text-slate-500">GoPay, Shopee, Dana</div>
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setSelectedMethod('va_bca')}
-                  className={`p-3 rounded-xl border text-left flex items-center gap-2.5 transition-all ${
-                    selectedMethod === 'va_bca'
-                      ? 'border-purple-600 bg-purple-50/60 ring-2 ring-purple-200'
-                      : 'border-slate-200 hover:border-slate-300'
-                  }`}
-                >
-                  <Building2 className="w-5 h-5 text-purple-700 shrink-0" />
-                  <div>
-                    <div className="text-xs font-bold text-slate-900">BCA Virtual Account</div>
-                    <div className="text-[10px] text-slate-500">Verifikasi Otomatis</div>
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setSelectedMethod('va_mandiri')}
-                  className={`p-3 rounded-xl border text-left flex items-center gap-2.5 transition-all ${
-                    selectedMethod === 'va_mandiri'
-                      ? 'border-purple-600 bg-purple-50/60 ring-2 ring-purple-200'
-                      : 'border-slate-200 hover:border-slate-300'
-                  }`}
-                >
-                  <CreditCard className="w-5 h-5 text-purple-700 shrink-0" />
-                  <div>
-                    <div className="text-xs font-bold text-slate-900">Mandiri VA</div>
-                    <div className="text-[10px] text-slate-500">Livin' & ATM</div>
-                  </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setSelectedMethod('va_bri')}
-                  className={`p-3 rounded-xl border text-left flex items-center gap-2.5 transition-all ${
-                    selectedMethod === 'va_bri'
-                      ? 'border-purple-600 bg-purple-50/60 ring-2 ring-purple-200'
-                      : 'border-slate-200 hover:border-slate-300'
-                  }`}
-                >
-                  <Building2 className="w-5 h-5 text-purple-700 shrink-0" />
-                  <div>
-                    <div className="text-xs font-bold text-slate-900">BRI BRIVA</div>
-                    <div className="text-[10px] text-slate-500">BRImo & Teller</div>
-                  </div>
-                </button>
-              </div>
-            </div>
-
-            {/* Instruction detail based on method */}
-            {selectedMethod === 'qris' ? (
-              <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-center space-y-3">
-                <div className="inline-block p-3 bg-white rounded-xl shadow-xs border border-slate-200">
-                  <div className="w-44 h-44 bg-slate-900 rounded-lg p-2 flex flex-col items-center justify-center text-white relative">
-                    <QrCode className="w-36 h-36 text-white" />
-                    <span className="absolute bottom-1 bg-amber-400 text-purple-950 font-bold text-[9px] px-1.5 py-0.5 rounded">
-                      QRIS AIRA BIMBEL
-                    </span>
-                  </div>
-                </div>
-                <p className="text-xs text-slate-600">
-                  Scan kode QRIS di atas menggunakan aplikasi m-Banking atau e-Wallet apa saja.
-                </p>
-              </div>
-            ) : (
-              <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
-                <span className="text-xs text-slate-500">Nomor Virtual Account:</span>
-                <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-slate-300 font-mono text-sm font-bold text-slate-900">
-                  <span>{vaNumbers[selectedMethod]}</span>
-                  <button
-                    onClick={() => handleCopy(vaNumbers[selectedMethod])}
-                    className="p-1 text-purple-700 hover:text-purple-900 flex items-center gap-1 text-xs"
-                  >
-                    {copied ? <CheckCircle className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
-                    <span>{copied ? 'Tersalin' : 'Salin'}</span>
-                  </button>
-                </div>
-                <p className="text-[11px] text-slate-500">
-                  Transfer tepat sesuai nominal: <strong>{formatRupiah(packageItem.price)}</strong> tanpa kode unik tambahan.
-                </p>
-              </div>
-            )}
-
-            {/* Midtrans Simulation Trigger */}
-            <div className="pt-2">
-              <button
-                type="button"
-                disabled={isProcessing}
-                onClick={handleSimulatePayment}
-                className="w-full py-3.5 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-50"
-              >
-                {isProcessing ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    <span>Menghubungi Midtrans Server & Mengaktifkan Paket...</span>
-                  </>
-                ) : (
-                  <>
-                    <ShieldCheck className="w-5 h-5 text-emerald-200" />
-                    <span>Simulasikan Pembayaran Sukses (Auto-Active 60 Hari)</span>
-                  </>
-                )}
-              </button>
-              <p className="text-[11px] text-center text-slate-400 mt-2">
-                *Demo payment simulator: Menguji webhook callback otomatis Midtrans & pembukaan akses CBT 60 hari.
-              </p>
-            </div>
-
+        <div className="p-6 space-y-5">
+          <div className="p-4 bg-purple-50 rounded-xl border border-purple-100">
+            <p className="text-xs text-purple-800">{packageItem.grade === 'SEMUA' ? 'Semua Jenjang' : `Jenjang ${packageItem.grade}`}</p>
+            <h4 className="text-sm font-bold text-slate-900 mt-1">{packageItem.title}</h4>
+            <p className="text-xl font-black text-purple-950 mt-2">{formatRupiah(packageItem.price)}</p>
           </div>
-        ) : (
-          /* Payment Success Confirmation */
-          <div className="p-8 text-center space-y-5">
-            <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-sm">
-              <CheckCircle className="w-10 h-10 text-emerald-600" />
-            </div>
-
-            <div>
-              <span className="inline-block px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold uppercase mb-1">
-                Pembayaran Terkonfirmasi
-              </span>
-              <h3 className="text-xl font-extrabold text-slate-900">
-                Selamat! Paket Belajar Aktif 60 Hari
-              </h3>
-              <p className="text-xs text-slate-600 mt-1">
-                Order ID: <strong className="font-mono text-purple-900">{confirmedOrderId}</strong>
-              </p>
-            </div>
-
-            <div className="p-4 bg-purple-50 rounded-xl border border-purple-100 text-left space-y-2 text-xs">
-              <div className="flex justify-between">
-                <span className="text-slate-500">Nama Paket:</span>
-                <span className="font-bold text-slate-800">{packageItem.title}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-500">Jenjang:</span>
-                <span className="font-semibold text-purple-800">{packageItem.grade}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-500">Masa Aktif:</span>
-                <span className="font-bold text-emerald-700">60 Hari (Hingga {new Date(Date.now() + 60*24*60*60*1000).toLocaleDateString('id-ID')})</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-500">Total Dibayar:</span>
-                <span className="font-black text-slate-900">{formatRupiah(packageItem.price)}</span>
+          <div className="p-4 bg-amber-50 rounded-xl border border-amber-300 text-amber-950">
+            <div className="flex gap-3 items-start">
+              <ShieldAlert className="w-5 h-5 shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-bold">Pembayaran belum tersedia</p>
+                <p className="text-xs mt-1 leading-relaxed">Integrasi resmi Midtrans belum dikonfigurasi. Demi keamanan, QRIS dan nomor Virtual Account simulasi telah dihapus. Paket tidak akan diaktifkan sebelum pembayaran nyata diverifikasi oleh gateway.</p>
               </div>
             </div>
-
-            <div className="flex flex-col sm:flex-row gap-3 pt-2">
-              <button
-                onClick={onClose}
-                className="flex-1 py-3 px-4 bg-purple-900 hover:bg-purple-950 text-white font-bold rounded-xl text-xs sm:text-sm transition-all flex items-center justify-center gap-2"
-              >
-                <span>Buka Ruang Belajar & Ujian</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-
           </div>
-        )}
-
+          <button onClick={onClose} className="w-full py-3 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-sm">Tutup</button>
+        </div>
       </div>
     </div>
   );
