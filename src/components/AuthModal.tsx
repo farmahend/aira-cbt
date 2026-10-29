@@ -68,6 +68,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       setErrorMsg('Konfigurasi Supabase belum tersedia. Pastikan VITE_SUPABASE_URL dan VITE_SUPABASE_ANON_KEY dipasang di Cloudflare Pages lalu build ulang.');
       return;
     }
+    setIsLoading(true);
+    setErrorMsg('');
     const redirectTo = window.location.origin;
     const oauthUrl = new URL('/auth/v1/authorize', supabaseUrl);
     oauthUrl.searchParams.set('provider', 'google');
@@ -84,6 +86,22 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto font-sans">
+      {isLoading && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/90 backdrop-blur-xl p-6 text-center" role="status" aria-live="polite">
+          <div className="w-full max-w-sm rounded-[2rem] border border-purple-300/20 bg-gradient-to-br from-purple-950 via-slate-950 to-indigo-950 p-9 text-white shadow-2xl">
+            <div className="relative mx-auto mb-7 flex h-24 w-24 items-center justify-center">
+              <div className="absolute inset-0 rounded-full border-4 border-purple-400/20" />
+              <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-amber-300 border-r-purple-400 animate-spin" />
+              <div className="absolute inset-3 rounded-full border-2 border-transparent border-b-purple-300 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.4s' }} />
+              <Sparkles className="h-8 w-8 text-amber-300 animate-pulse" />
+            </div>
+            <p className="text-xs font-black uppercase tracking-[.24em] text-amber-300">AIRA CBT</p>
+            <h3 className="mt-3 text-2xl font-black">Menyiapkan Ruang Belajar</h3>
+            <p className="mt-2 text-sm leading-relaxed text-purple-200">Menghubungkan akun dengan aman. Sebentar ya, kami sedang mengarahkanmu ke dashboard.</p>
+            <div className="mt-6 h-1.5 overflow-hidden rounded-full bg-white/10"><div className="h-full w-2/5 rounded-full bg-gradient-to-r from-amber-300 via-purple-300 to-amber-300 animate-pulse" /></div>
+          </div>
+        </div>
+      )}
       <div className="bg-white rounded-3xl max-w-4xl w-full shadow-2xl overflow-hidden border border-slate-200 my-6 flex flex-col md:flex-row max-h-[92vh]">
         
         {/* ================================================================= */}
