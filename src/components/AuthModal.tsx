@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AuthUser, GradeLevel, PackageItem } from '../types';
-import { getStoredUsers, registerNewUser, saveStoredCurrentUser } from '../utils/storage';
+
 import {
   User,
   Lock,
@@ -60,128 +60,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
   if (!isOpen) return null;
 
-  // Handler for Quick Auto-Login for Student Demo
-  const handleQuickStudentLogin = () => {
-    setIsLoading(true);
-    setErrorMsg('');
-
-    setTimeout(() => {
-      const users = getStoredUsers();
-      let student = users.find(u => u.role === 'customer');
-
-      if (!student) {
-        student = {
-          id: 'user-cust-01',
-          name: 'Mohammad',
-          email: 'mohammad719@guru.smp.belajar.id',
-          role: 'customer',
-          phone: '+62 857-1234-5678',
-          grade: 'SMP',
-          schoolOrigin: 'SMP Negeri 1',
-          avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',
-          interestedPackageId: selectedPackageId,
-          createdAt: new Date().toISOString()
-        };
-      }
-
-      saveStoredCurrentUser(student);
-      setIsLoading(false);
-      onAuthSuccess(student, selectedPackageId);
-    }, 400);
-  };
-
-  // Google Sign-In Simulation
-  const handleGoogleSignIn = () => {
-    setIsLoading(true);
-    setErrorMsg('');
-
-    setTimeout(() => {
-      const googleUser: AuthUser = {
-        id: `google-${Date.now()}`,
-        name: 'Mohammad (Google Auth)',
-        email: 'mohammad719@guru.smp.belajar.id',
-        role: 'customer',
-        grade: grade,
-        phone: '+62 812-3456-7890',
-        schoolOrigin: schoolOrigin || 'Sekolah Siswa',
-        avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',
-        interestedPackageId: selectedPackageId,
-        createdAt: new Date().toISOString()
-      };
-
-      saveStoredCurrentUser(googleUser);
-      setIsLoading(false);
-      onAuthSuccess(googleUser, selectedPackageId);
-    }, 500);
-  };
-
-  // Submit Login or Register
+  // Fail closed until Supabase Auth is integrated.
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMsg('');
-
-    if (!email.trim() || !password.trim()) {
-      setErrorMsg('Mohon lengkapi email dan kata sandi.');
-      return;
-    }
-
-    if (mode === 'register') {
-      if (!name.trim()) {
-        setErrorMsg('Mohon masukkan nama lengkap siswa.');
-        return;
-      }
-      if (password.length < 6) {
-        setErrorMsg('Kata sandi minimal 6 karakter.');
-        return;
-      }
-      if (password !== confirmPassword) {
-        setErrorMsg('Konfirmasi kata sandi tidak cocok.');
-        return;
-      }
-    }
-
-    setIsLoading(true);
-
-    setTimeout(() => {
-      const users = getStoredUsers();
-
-      if (mode === 'login') {
-        const found = users.find(
-          u => u.email.toLowerCase() === email.toLowerCase().trim() && u.role === 'customer'
-        );
-
-        if (found) {
-          saveStoredCurrentUser(found);
-          setIsLoading(false);
-          onAuthSuccess(found, selectedPackageId);
-        } else {
-          // If not found in database, allow student to sign in cleanly with their email
-          const anyUser = users.find(u => u.email.toLowerCase() === email.toLowerCase().trim());
-          if (anyUser && anyUser.role === 'customer') {
-            saveStoredCurrentUser(anyUser);
-            setIsLoading(false);
-            onAuthSuccess(anyUser, selectedPackageId);
-          } else {
-            setIsLoading(false);
-            setErrorMsg('Akun siswa belum terdaftar. Silakan klik tab "Daftar Akun Baru" di atas.');
-          }
-        }
-      } else {
-        // Mode Register
-        const registered = registerNewUser({
-          name: name.trim(),
-          email: email.trim(),
-          role: 'customer',
-          phone: phone.trim() || '+62 812-3456-7890',
-          grade: grade,
-          schoolOrigin: schoolOrigin.trim() || 'Pelajar Indonesia',
-          interestedPackageId: selectedPackageId,
-        });
-
-        setIsLoading(false);
-        onAuthSuccess(registered, selectedPackageId);
-      }
-    }, 500);
+    setErrorMsg('Login dan pendaftaran belum tersedia karena autentikasi Supabase belum dihubungkan. Tidak ada akun demo yang dapat digunakan.');
   };
 
   return (
@@ -225,19 +107,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               </div>
             </div>
           </div>
-
-          {/* Quick Demo Fill Button */}
-          <div className="relative z-10 pt-6 mt-6 border-t border-white/15">
-            <button
-              type="button"
-              onClick={handleQuickStudentLogin}
-              className="w-full py-2.5 px-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-purple-950 text-xs font-black transition-all text-center shadow-md flex items-center justify-center gap-2"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Masuk Cepat: Siswa Demo (Mohammad)</span>
-            </button>
-          </div>
-        </div>
 
         {/* ================================================================= */}
         {/* RIGHT INTERACTIVE AUTH FORM (STUDENT ONLY)                       */}
@@ -315,40 +184,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <span>{errorMsg}</span>
               </div>
             )}
-
-            {/* Google OAuth One-Tap Simulation Button */}
-            <button
-              type="button"
-              onClick={handleGoogleSignIn}
-              disabled={isLoading}
-              className="w-full py-2.5 px-4 bg-white hover:bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-700 transition-all shadow-2xs flex items-center justify-center gap-3 hover:border-purple-300"
-            >
-              <svg className="w-4 h-4" viewBox="0 0 24 24">
-                <path
-                  fill="#4285F4"
-                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                />
-                <path
-                  fill="#34A853"
-                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                />
-                <path
-                  fill="#FBBC05"
-                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-                />
-                <path
-                  fill="#EA4335"
-                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-                />
-              </svg>
-              <span>Lanjutkan dengan Akun Google</span>
-            </button>
-
-            <div className="flex items-center gap-3">
-              <div className="flex-1 h-px bg-slate-200" />
-              <span className="text-[11px] text-slate-400 font-semibold uppercase">atau dengan email</span>
-              <div className="flex-1 h-px bg-slate-200" />
-            </div>
 
             {/* FORM */}
             <form onSubmit={handleSubmit} className="space-y-3.5 text-xs">
