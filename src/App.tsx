@@ -75,19 +75,29 @@ export default function App() {
         if (!response.ok) throw new Error('Gagal memverifikasi akun Google di Supabase.');
         return response.json();
       })
-      .then((profile: { id: string; email?: string; user_metadata?: { full_name?: string; name?: string; avatar_url?: string; picture?: string } }) => {
+      .then(async (profile: { id: string; email?: string; user_metadata?: { full_name?: string; name?: string; avatar_url?: string; picture?: string } }) => {
+        const profileResponse = await fetch(
+          `${supabaseUrl.replace(/\\/$/, '')}/rest/v1/profiles?select=role&id=eq.${encodeURIComponent(profile.id)}`,
+          { headers: { apikey: supabaseAnonKey, Authorization: `Bearer ${accessToken}` } }
+        );
+        if (!profileResponse.ok) {
+          throw new Error('Gagal membaca role akun dari tabel profiles. Pastikan kebijakan RLS mengizinkan pengguna membaca profilnya sendiri.');
+        }
+        const rows: Array<{ role?: string }> = await profileResponse.json();
+        const role: UserRole = rows[0]?.role === 'admin' ? 'admin' : 'customer';
         const name = profile.user_metadata?.full_name || profile.user_metadata?.name || profile.email?.split('@')[0] || 'Siswa';
         const user: AuthUser = {
           id: profile.id,
           name,
           email: profile.email || '',
-          role: 'customer',
+          role,
           grade: 'SMP',
           avatarUrl: profile.user_metadata?.avatar_url || profile.user_metadata?.picture || ''
         } as AuthUser;
         saveStoredCurrentUser(user);
         setCurrentUser(user);
-        setCurrentView('dashboard');
+        setCurrentView(role === 'admin' ? 'admin' : 'dashboard');
+        setIsAdminLoginModalOpen(false);
       })
       .catch(error => {
         console.error('Supabase Google OAuth callback failed:', error);
