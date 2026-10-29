@@ -1,0 +1,7 @@
+project_id = "aira-cbt"
+
+[functions.midtrans-create]
+verify_jwt = true
+
+[functions.midtrans-webhook]
+verify_jwt = false
