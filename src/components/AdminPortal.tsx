@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { MathText } from './MathText';
 import {
   Question,
   Exam,
@@ -393,11 +394,11 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 py-8 px-4 sm:px-6 lg:px-8 font-sans">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="admin-portal min-h-screen bg-slate-50 py-7 px-4 sm:px-6 lg:px-8 font-sans">
+      <div className="admin-shell max-w-7xl mx-auto space-y-7">
         
         {/* Top Navigation Bar */}
-        <div className="bg-gradient-to-r from-purple-900 via-purple-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6 border-b-4 border-amber-400">
+        <div className="admin-header bg-gradient-to-r from-slate-950 via-indigo-950 to-purple-950 rounded-[1.75rem] p-6 sm:p-8 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6 border-b-4 border-amber-400">
           <div className="space-y-1.5">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400 text-purple-950 text-xs font-black uppercase font-display tracking-wider">
               <Shield className="w-3.5 h-3.5" />
@@ -2306,6 +2307,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                     placeholder="Masukkan wacana bacaan, informasi data, atau cerita stimulus di sini..."
                     className="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-xs font-sans"
                   />
+                  <div className="math-preview-panel mt-3"><div className="math-preview-label">Pratinjau stimulus</div><MathText text={editingQuestion.stimulusText || 'Tulis stimulus untuk melihat pratinjau.'} /></div>
                 </div>
 
                 {/* Upload Stimulus Image using Cloudinary */}
@@ -2335,6 +2337,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                     placeholder="Contoh: Berdasarkan wacana di atas, berapakah total keuntungan bersih yang diperoleh?"
                     className="w-full p-2.5 bg-white border border-purple-200 rounded-xl text-xs font-semibold"
                   />
+                  <div className="math-preview-panel mt-3"><div className="math-preview-label">Pratinjau matematika</div><MathText text={editingQuestion.questionPrompt || 'Rumus akan tampil di sini'} /></div>
                 </div>
 
                 {/* SUBFORM: Pilihan Ganda */}
