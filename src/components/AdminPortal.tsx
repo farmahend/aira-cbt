@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { MathText } from './MathText';
+import { EquationEditor } from './EquationEditor';
 import {
   Question,
   Exam,
@@ -2298,17 +2299,13 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                   />
                 </div>
 
-                <div>
-                  <label className="font-semibold text-slate-700 block mb-1">Teks Wacana / Narasi Lengkap *</label>
-                  <textarea
-                    rows={4}
-                    value={editingQuestion.stimulusText}
-                    onChange={e => setEditingQuestion({ ...editingQuestion, stimulusText: e.target.value })}
-                    placeholder="Masukkan wacana bacaan, informasi data, atau cerita stimulus di sini..."
-                    className="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-xs font-sans"
-                  />
-                  <div className="math-preview-panel mt-3"><div className="math-preview-label">Pratinjau stimulus</div><MathText text={editingQuestion.stimulusText || 'Tulis stimulus untuk melihat pratinjau.'} /></div>
-                </div>
+                <EquationEditor
+                  label="Teks Wacana / Narasi Lengkap *"
+                  rows={4}
+                  value={editingQuestion.stimulusText || ''}
+                  onChange={value => setEditingQuestion({ ...editingQuestion, stimulusText: value })}
+                  placeholder="Masukkan wacana, data, atau cerita. Sisipkan simbol matematika dari tombol di atas."
+                />
 
                 {/* Upload Stimulus Image using Cloudinary */}
                 <div>
@@ -2328,17 +2325,14 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                   <span>KARTU 2: Pertanyaan & Opsi Jawaban</span>
                 </div>
 
-                <div>
-                  <label className="font-bold text-slate-900 block mb-1">Kalimat Pertanyaan Utama *</label>
-                  <textarea
-                    rows={2}
-                    value={editingQuestion.questionPrompt}
-                    onChange={e => setEditingQuestion({ ...editingQuestion, questionPrompt: e.target.value })}
-                    placeholder="Contoh: Berdasarkan wacana di atas, berapakah total keuntungan bersih yang diperoleh?"
-                    className="w-full p-2.5 bg-white border border-purple-200 rounded-xl text-xs font-semibold"
-                  />
-                  <div className="math-preview-panel mt-3"><div className="math-preview-label">Pratinjau matematika</div><MathText text={editingQuestion.questionPrompt || 'Rumus akan tampil di sini'} /></div>
-                </div>
+                <EquationEditor
+                  label="Kalimat Pertanyaan Utama *"
+                  rows={3}
+                  value={editingQuestion.questionPrompt || ''}
+                  onChange={value => setEditingQuestion({ ...editingQuestion, questionPrompt: value })}
+                  placeholder="Tuliskan pertanyaan. Klik tombol akar, pangkat, pecahan, atau simbol untuk menyisipkannya."
+                  className="font-semibold"
+                />
 
                 {/* SUBFORM: Pilihan Ganda */}
                 {editingQuestion.type === 'pilihan_ganda' && (
@@ -2552,12 +2546,12 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
 
                 <div>
                   <label className="font-semibold text-slate-800 block mb-1">Pembahasan Konsep Mendalam</label>
-                  <textarea
-                    rows={3}
-                    value={editingQuestion.explanation}
-                    onChange={e => setEditingQuestion({ ...editingQuestion, explanation: e.target.value })}
-                    placeholder="Uraikan tahapan rumus dan logika pengerjaan secara sistematis..."
-                    className="w-full p-2.5 bg-white border border-amber-300 rounded-xl text-xs"
+                  <EquationEditor
+                    label="Pembahasan Konsep Mendalam"
+                    rows={4}
+                    value={editingQuestion.explanation || ''}
+                    onChange={value => setEditingQuestion({ ...editingQuestion, explanation: value })}
+                    placeholder="Uraikan tahapan pengerjaan. Gunakan tombol simbol untuk rumus matematika."
                   />
                 </div>
 
@@ -2565,12 +2559,13 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                   <label className="font-bold text-amber-950 block mb-1">
                     Trik Cepat 15 Detik Mas Aira (Khas Aira Bimbel)
                   </label>
-                  <textarea
+                  <EquationEditor
+                    label="Trik Cepat 15 Detik Mas Aira (Khas Aira Bimbel)"
                     rows={2}
                     value={editingQuestion.fastTrick || ''}
-                    onChange={e => setEditingQuestion({ ...editingQuestion, fastTrick: e.target.value })}
-                    placeholder="Contoh: Kunci deret Sn = n/2 * (2a + (n-1)b) -> hitung langsung kelipatan..."
-                    className="w-full p-2.5 bg-white border border-amber-400 rounded-xl text-xs font-semibold"
+                    onChange={value => setEditingQuestion({ ...editingQuestion, fastTrick: value })}
+                    placeholder="Tuliskan trik singkat dan sisipkan simbol matematika bila diperlukan."
+                    className="font-semibold"
                   />
                 </div>
               </div>
