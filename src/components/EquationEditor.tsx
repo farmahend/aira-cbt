@@ -11,25 +11,25 @@ type Props = {
   className?: string;
 };
 
-const tools = [
-  { label: '√ Akar', insert: '√( )', cursor: 3, icon: Radical },
-  { label: 'Pangkat ²', insert: '²', cursor: 1, icon: Superscript },
-  { label: 'Pangkat ³', insert: '³', cursor: 1, icon: Superscript },
-  { label: 'Pangkat n', insert: '^( )', cursor: 2, icon: Superscript },
-  { label: 'Pecahan', insert: '( )/( )', cursor: 2, icon: Divide },
-  { label: 'π', insert: 'π', cursor: 1, icon: Pi },
-  { label: 'Σ', insert: 'Σ', cursor: 1, icon: Sigma },
-  { label: 'Integral ∫', insert: '∫', cursor: 1, icon: Sigma },
-  { label: '×', insert: '×', cursor: 1, icon: Parentheses },
-  { label: '÷', insert: '÷', cursor: 1, icon: Divide },
-  { label: '≤', insert: '≤', cursor: 1, icon: Parentheses },
-  { label: '≥', insert: '≥', cursor: 1, icon: Parentheses },
-  { label: '≠', insert: '≠', cursor: 1, icon: Parentheses },
-  { label: '±', insert: '±', cursor: 1, icon: Parentheses },
-  { label: 'θ', insert: 'θ', cursor: 1, icon: Pi },
-  { label: '°', insert: '°', cursor: 1, icon: Pi },
-  { label: '→', insert: '→', cursor: 1, icon: Parentheses },
-  { label: '∞', insert: '∞', cursor: 1, icon: Sigma },
+const equationTools = [
+  { label: 'Akar √', insert: String.raw`\\(\\sqrt{\\placeholder{}}\\)`, cursor: 13, icon: Radical },
+  { label: 'Pangkat n', insert: String.raw`\\(\\placeholder{}^{\\placeholder{}}\\)`, cursor: 13, icon: Superscript },
+  { label: 'Pangkat ²', insert: String.raw`\\(x^2\\)`, cursor: 5, icon: Superscript },
+  { label: 'Pangkat ³', insert: String.raw`\\(x^3\\)`, cursor: 5, icon: Superscript },
+  { label: 'Pecahan', insert: String.raw`\\(\\frac{\\placeholder{}}{\\placeholder{}}\\)`, cursor: 13, icon: Divide },
+  { label: 'Indeks', insert: String.raw`\\(x_{\\placeholder{}}\\)`, cursor: 8, icon: Superscript },
+  { label: 'π', insert: String.raw`\\(\\pi\\)`, cursor: 4, icon: Pi },
+  { label: 'Σ', insert: String.raw`\\(\\sum_{i=1}^{n}\\)`, cursor: 4, icon: Sigma },
+  { label: 'Integral ∫', insert: String.raw`\\(\\int_{a}^{b}\\)`, cursor: 4, icon: Sigma },
+  { label: '×', insert: String.raw`\\(\\times\\)`, cursor: 4, icon: Parentheses },
+  { label: '÷', insert: String.raw`\\(\\div\\)`, cursor: 4, icon: Divide },
+  { label: '≤', insert: String.raw`\\(\\leq\\)`, cursor: 4, icon: Parentheses },
+  { label: '≥', insert: String.raw`\\(\\geq\\)`, cursor: 4, icon: Parentheses },
+  { label: '≠', insert: String.raw`\\(\\neq\\)`, cursor: 4, icon: Parentheses },
+  { label: '±', insert: String.raw`\\(\\pm\\)`, cursor: 4, icon: Parentheses },
+  { label: 'θ', insert: String.raw`\\(\\theta\\)`, cursor: 4, icon: Pi },
+  { label: '°', insert: String.raw`\\(^{\\circ}\\)`, cursor: 4, icon: Pi },
+  { label: '∞', insert: String.raw`\\(\\infty\\)`, cursor: 4, icon: Sigma },
 ];
 
 export const EquationEditor: React.FC<Props> = ({
@@ -59,7 +59,7 @@ export const EquationEditor: React.FC<Props> = ({
       <label className="block text-sm font-semibold text-slate-800">{label}</label>
       <div className="rounded-xl border border-slate-200 bg-white p-2">
         <div className="flex flex-wrap gap-1.5 pb-2" aria-label="Toolbar rumus matematika">
-          {tools.map((tool) => {
+          {equationTools.map((tool) => {
             const Icon = tool.icon;
             return (
               <button
@@ -85,10 +85,10 @@ export const EquationEditor: React.FC<Props> = ({
         />
       </div>
       <div className="rounded-lg bg-slate-50 px-3 py-2">
-        <div className="mb-1 text-[11px] font-bold uppercase tracking-wide text-slate-500">Pratinjau teks matematika</div>
+        <div className="mb-1 text-[11px] font-bold uppercase tracking-wide text-slate-500">Pratinjau rumus — bentuk matematika</div>
         <MathText text={value || 'Hasil rumus dan teks akan terlihat di sini.'} className="min-h-6 text-sm text-slate-800" />
       </div>
-      <p className="text-xs text-slate-500">Klik simbol untuk menyisipkannya di posisi kursor. Simbol ditampilkan langsung, tanpa perlu menulis kode LaTeX.</p>
+      <p className="text-xs text-slate-500">Klik simbol untuk menyisipkan template rumus. Pratinjau di bawah menampilkan bentuk matematika yang dirender; teks sumber tetap disimpan agar rumus bisa diedit kembali.</p>
     </div>
   );
 };
