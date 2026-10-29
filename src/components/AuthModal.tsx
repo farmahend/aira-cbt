@@ -17,7 +17,8 @@ import {
   School,
   Clock,
   BookOpen,
-  Award
+  Award,
+  Chrome
 } from 'lucide-react';
 
 interface AuthModalProps {
@@ -60,7 +61,22 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
   if (!isOpen) return null;
 
-  // Fail closed until Supabase Auth is integrated.
+  const handleGoogleAuth = () => {
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
+    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+    if (!supabaseUrl || !supabaseAnonKey) {
+      setErrorMsg('Konfigurasi Supabase belum tersedia. Pastikan VITE_SUPABASE_URL dan VITE_SUPABASE_ANON_KEY dipasang di Cloudflare Pages lalu build ulang.');
+      return;
+    }
+    const redirectTo = window.location.origin;
+    const oauthUrl = new URL('/auth/v1/authorize', supabaseUrl);
+    oauthUrl.searchParams.set('provider', 'google');
+    oauthUrl.searchParams.set('redirect_to', redirectTo);
+    oauthUrl.searchParams.set('apikey', supabaseAnonKey);
+    window.location.assign(oauthUrl.toString());
+  };
+
+  // Email/password remains unavailable until wired to Supabase Auth.
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('Login dan pendaftaran belum tersedia karena autentikasi Supabase belum dihubungkan. Tidak ada akun demo yang dapat digunakan.');
@@ -185,6 +201,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <span>{errorMsg}</span>
               </div>
             )}
+
+            {/* Google OAuth */}
+            <button
+              type="button"
+              onClick={handleGoogleAuth}
+              className="w-full py-3 px-4 border border-slate-300 hover:border-purple-400 bg-white hover:bg-purple-50 text-slate-800 font-extrabold rounded-xl text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-sm"
+            >
+              <Chrome className="w-4 h-4 text-blue-600" />
+              {mode === 'login' ? 'Masuk dengan Google' : 'Daftar dengan Google'}
+            </button>
+            <div className="flex items-center gap-3 text-[10px] uppercase font-bold text-slate-400">
+              <div className="h-px bg-slate-200 flex-1" />
+              <span>atau gunakan email</span>
+              <div className="h-px bg-slate-200 flex-1" />
+            </div>
 
             {/* FORM */}
             <form onSubmit={handleSubmit} className="space-y-3.5 text-xs">
