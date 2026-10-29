@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { MathText } from './MathText';
 import {
   Question,
   Exam,
@@ -489,7 +490,7 @@ export const CBTExam: React.FC<CBTExamProps> = ({
 
               {/* Stimulus Text */}
               <div className={`text-slate-800 ${textSizeClass} whitespace-pre-line leading-relaxed font-normal`}>
-                {currentQuestion.stimulusText}
+                <MathText text={currentQuestion.stimulusText} />
               </div>
             </div>
           </div>
@@ -515,7 +516,7 @@ export const CBTExam: React.FC<CBTExamProps> = ({
               {/* Question Prompt */}
               <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
                 <p className={`font-semibold text-slate-900 ${textSizeClass}`}>
-                  {currentQuestion.questionPrompt}
+                  <MathText text={currentQuestion.questionPrompt} />
                 </p>
               </div>
 
@@ -547,7 +548,7 @@ export const CBTExam: React.FC<CBTExamProps> = ({
                           {opt.label}
                         </div>
                         <span className={`flex-1 font-normal ${textSizeClass}`}>
-                          {opt.text}
+                          <MathText text={opt.text} />
                         </span>
                       </button>
                     );
@@ -616,7 +617,7 @@ export const CBTExam: React.FC<CBTExamProps> = ({
                               {idx + 1}
                             </span>
                             <span className="text-xs sm:text-sm font-medium text-slate-800">
-                              {pair.left}
+                              <MathText text={pair.left} />
                             </span>
                           </div>
 
@@ -662,7 +663,7 @@ export const CBTExam: React.FC<CBTExamProps> = ({
                           return (
                             <tr key={item.id} className="hover:bg-slate-50/60">
                               <td className="py-3 px-3 text-slate-800 font-normal leading-relaxed">
-                                {item.statement}
+                                <MathText text={item.statement} />
                               </td>
                               <td className="py-3 px-2 text-center align-middle">
                                 <button
