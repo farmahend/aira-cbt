@@ -366,7 +366,7 @@ export async function syncExamResultToDatabase(
     // Ignore
   }
 
-  return { success: true, syncedAt, target: 'local_verified' };
+  return { success: false, syncedAt, target: 'local_verified' };
 }
 
 // Integrations Config
