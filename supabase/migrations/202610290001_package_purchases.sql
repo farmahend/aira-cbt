@@ -25,7 +25,7 @@ create table if not exists public.package_purchases (
   order_id text not null unique,
   amount integer not null check (amount > 0),
   payment_status text not null default 'pending'
-    check (payment_status in ('pending','settlement','capture','expired','cancel','deny','refund','failure')),
+    check (payment_status in ('pending','settlement','capture','expired','expire','cancel','deny','refund','failure')),
   purchased_at timestamptz,
   expires_at timestamptz,
   created_at timestamptz not null default now(),
