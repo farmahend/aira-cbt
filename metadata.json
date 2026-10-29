@@ -1,0 +1,6 @@
+{
+  "name": "Aira Bimbel - Platform Soal TKA SD, SMP, SMA & CBT",
+  "description": "Platform tryout dan bank soal Tes Kemampuan Akademik (TKA) resmi Aira Bimbel untuk jenjang SD, SMP, dan SMA dengan sistem CBT profesional, demo gratis, paket aktif 60 hari, dan manajemen admin lengkap.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
