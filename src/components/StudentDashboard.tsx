@@ -103,12 +103,12 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col font-sans text-slate-900">
+    <div className="aira-student-app min-h-screen bg-slate-100 flex flex-col font-sans text-slate-900">
       
       {/* =========================================================================
           PRISTINE APK APP BAR (TOP BAR)
          ========================================================================= */}
-      <header className="sticky top-0 z-30 bg-purple-950 text-white shadow-md border-b-2 border-amber-400">
+      <header className="aira-student-header sticky top-0 z-30 bg-purple-950 text-white shadow-md border-b-2 border-amber-400">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-18">
             
