@@ -62,126 +62,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
   // Handler for Quick Auto-Login for Student Demo
   const handleQuickStudentLogin = () => {
-    setIsLoading(true);
-    setErrorMsg('');
-
-    setTimeout(() => {
-      const users = getStoredUsers();
-      let student = users.find(u => u.role === 'customer');
-
-      if (!student) {
-        student = {
-          id: 'user-cust-01',
-          name: 'Mohammad',
-          email: 'mohammad719@guru.smp.belajar.id',
-          role: 'customer',
-          phone: '+62 857-1234-5678',
-          grade: 'SMP',
-          schoolOrigin: 'SMP Negeri 1',
-          avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',
-          interestedPackageId: selectedPackageId,
-          createdAt: new Date().toISOString()
-        };
-      }
-
-      saveStoredCurrentUser(student);
-      setIsLoading(false);
-      onAuthSuccess(student, selectedPackageId);
-    }, 400);
+    setErrorMsg('Login demo dinonaktifkan untuk keamanan. Autentikasi server harus dikonfigurasi terlebih dahulu.');
   };
 
   // Google Sign-In Simulation
   const handleGoogleSignIn = () => {
-    setIsLoading(true);
-    setErrorMsg('');
-
-    setTimeout(() => {
-      const googleUser: AuthUser = {
-        id: `google-${Date.now()}`,
-        name: 'Mohammad (Google Auth)',
-        email: 'mohammad719@guru.smp.belajar.id',
-        role: 'customer',
-        grade: grade,
-        phone: '+62 812-3456-7890',
-        schoolOrigin: schoolOrigin || 'Sekolah Siswa',
-        avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',
-        interestedPackageId: selectedPackageId,
-        createdAt: new Date().toISOString()
-      };
-
-      saveStoredCurrentUser(googleUser);
-      setIsLoading(false);
-      onAuthSuccess(googleUser, selectedPackageId);
-    }, 500);
+    setErrorMsg('Google Sign-In belum terhubung ke OAuth provider. Tidak ada sesi login yang dibuat.');
   };
 
   // Submit Login or Register
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMsg('');
-
-    if (!email.trim() || !password.trim()) {
-      setErrorMsg('Mohon lengkapi email dan kata sandi.');
-      return;
-    }
-
-    if (mode === 'register') {
-      if (!name.trim()) {
-        setErrorMsg('Mohon masukkan nama lengkap siswa.');
-        return;
-      }
-      if (password.length < 6) {
-        setErrorMsg('Kata sandi minimal 6 karakter.');
-        return;
-      }
-      if (password !== confirmPassword) {
-        setErrorMsg('Konfirmasi kata sandi tidak cocok.');
-        return;
-      }
-    }
-
-    setIsLoading(true);
-
-    setTimeout(() => {
-      const users = getStoredUsers();
-
-      if (mode === 'login') {
-        const found = users.find(
-          u => u.email.toLowerCase() === email.toLowerCase().trim() && u.role === 'customer'
-        );
-
-        if (found) {
-          saveStoredCurrentUser(found);
-          setIsLoading(false);
-          onAuthSuccess(found, selectedPackageId);
-        } else {
-          // If not found in database, allow student to sign in cleanly with their email
-          const anyUser = users.find(u => u.email.toLowerCase() === email.toLowerCase().trim());
-          if (anyUser && anyUser.role === 'customer') {
-            saveStoredCurrentUser(anyUser);
-            setIsLoading(false);
-            onAuthSuccess(anyUser, selectedPackageId);
-          } else {
-            setIsLoading(false);
-            setErrorMsg('Akun siswa belum terdaftar. Silakan klik tab "Daftar Akun Baru" di atas.');
-          }
-        }
-      } else {
-        // Mode Register
-        const registered = registerNewUser({
-          name: name.trim(),
-          email: email.trim(),
-          role: 'customer',
-          phone: phone.trim() || '+62 812-3456-7890',
-          grade: grade,
-          schoolOrigin: schoolOrigin.trim() || 'Pelajar Indonesia',
-          interestedPackageId: selectedPackageId,
-        });
-
-        setIsLoading(false);
-        onAuthSuccess(registered, selectedPackageId);
-      }
-    }, 500);
+    setErrorMsg(
+      'Autentikasi akun belum terhubung ke server yang aman. Login dan pendaftaran dinonaktifkan sementara agar kata sandi tidak diabaikan atau sesi palsu dibuat.'
+    );
   };
 
   return (
