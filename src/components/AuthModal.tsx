@@ -107,6 +107,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               </div>
             </div>
           </div>
+        </div>
 
         {/* ================================================================= */}
         {/* RIGHT INTERACTIVE AUTH FORM (STUDENT ONLY)                       */}
