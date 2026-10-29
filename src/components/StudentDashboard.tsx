@@ -197,6 +197,38 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
         </div>
       </header>
 
+      {(() => {
+        const now = Date.now();
+        const expiring = activeSubs.filter((sub) => {
+          const remaining = new Date(sub.expiresAt).getTime() - now;
+          return remaining > 0 && remaining <= 7 * 24 * 60 * 60 * 1000;
+        });
+        const expired = subscriptions.filter((sub) => new Date(sub.expiresAt).getTime() <= now);
+        if (expiring.length === 0 && expired.length === 0) return null;
+        return (
+          <section className="mx-auto mt-4 w-full max-w-7xl px-4 sm:px-6 lg:px-8 space-y-2" aria-live="polite">
+            {expiring.length > 0 && (
+              <div className="flex gap-3 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-amber-950">
+                <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
+                <div className="text-sm">
+                  <p className="font-black">Paket segera berakhir</p>
+                  {expiring.map((sub) => <p key={sub.id} className="mt-1">{sub.packageName}: tersisa {getRemainingDays(sub.expiresAt)} hari (berakhir {formatDateIndo(sub.expiresAt)}).</p>)}
+                </div>
+              </div>
+            )}
+            {expired.length > 0 && (
+              <div className="flex gap-3 rounded-2xl border border-rose-300 bg-rose-50 p-4 text-rose-950">
+                <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
+                <div className="text-sm">
+                  <p className="font-black">Masa aktif paket telah habis</p>
+                  {expired.map((sub) => <p key={sub.id} className="mt-1">{sub.packageName} berakhir pada {formatDateIndo(sub.expiresAt)}. Beli paket kembali untuk melanjutkan akses.</p>)}
+                </div>
+              </div>
+            )}
+          </section>
+        );
+      })()}
+
       {/* =========================================================================
           SCREEN 1: MENU UTAMA APK (DASHBOARD CARDS)
           When currentScreen === 'menu', ONLY show the clean main menu cards.
