@@ -37,11 +37,25 @@ serve(async (req) => {
   if (transactionStatus === "capture" && status.fraud_status !== "accept") paymentStatus = "deny";
   const paid = transactionStatus === "settlement" || (transactionStatus === "capture" && status.fraud_status === "accept");
   const now = new Date();
-  const expiry = new Date(now.getTime() + 60 * 24 * 60 * 60 * 1000).toISOString();
   const patch: Record<string, unknown> = { payment_status: paymentStatus, updated_at: now.toISOString() };
   if (paid) {
-    patch.purchased_at = now.toISOString();
-    patch.expires_at = expiry;
+    // Set the access window only once so repeated Midtrans notifications cannot extend it.
+    const existingResponse = await fetch(
+      `${supabaseUrl}/rest/v1/package_purchases?select=purchased_at,expires_at&order_id=eq.${encodeURIComponent(purchase.order_id)}`,
+      { headers: dbHeaders },
+    );
+    const existingRows = existingResponse.ok ? await existingResponse.json() : [];
+    if (!existingRows[0]?.purchased_at || !existingRows[0]?.expires_at) {
+      const catalogResponse = await fetch(
+        `${supabaseUrl}/rest/v1/package_catalog?select=duration_days&id=eq.${encodeURIComponent(purchase.package_id)}`,
+        { headers: dbHeaders },
+      );
+      const catalogRows = catalogResponse.ok ? await catalogResponse.json() : [];
+      const durationDays = Number(catalogRows[0]?.duration_days);
+      if (!Number.isFinite(durationDays) || durationDays < 1) return new Response("Invalid package duration", { status: 500 });
+      patch.purchased_at = now.toISOString();
+      patch.expires_at = new Date(now.getTime() + durationDays * 24 * 60 * 60 * 1000).toISOString();
+    }
   }
   const update = await fetch(
     `${supabaseUrl}/rest/v1/package_purchases?order_id=eq.${encodeURIComponent(purchase.order_id)}`,
