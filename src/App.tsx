@@ -77,7 +77,7 @@ export default function App() {
       })
       .then(async (profile: { id: string; email?: string; user_metadata?: { full_name?: string; name?: string; avatar_url?: string; picture?: string } }) => {
         const profileResponse = await fetch(
-          `${supabaseUrl.replace(/\\/$/, '')}/rest/v1/profiles?select=role&id=eq.${encodeURIComponent(profile.id)}`,
+          `${supabaseUrl.replace(/\/$/, '')}/rest/v1/profiles?select=role&id=eq.${encodeURIComponent(profile.id)}`,
           { headers: { apikey: supabaseAnonKey, Authorization: `Bearer ${accessToken}` } }
         );
         if (!profileResponse.ok) {
