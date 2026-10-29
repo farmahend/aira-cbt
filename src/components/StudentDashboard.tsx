@@ -56,6 +56,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
 }) => {
   // Screen-based full page routing (APK-Style)
   const [currentScreen, setCurrentScreen] = useState<StudentScreen>('menu');
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [katalogGradeFilter, setKatalogGradeFilter] = useState<GradeLevel>('SEMUA');
   const [katalogTypeFilter, setKatalogTypeFilter] = useState<'ALL' | 'satuan' | 'bundle'>('ALL');
 
@@ -105,6 +106,16 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
   return (
     <div className="aira-student-app min-h-screen bg-slate-100 flex flex-col font-sans text-slate-900">
       
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/70 p-4" role="dialog" aria-modal="true" aria-labelledby="student-logout-title">
+          <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-100 text-rose-600"><LogOut className="h-7 w-7" /></div>
+            <h2 id="student-logout-title" className="text-center text-xl font-black text-slate-900">Keluar dari Akun?</h2>
+            <p className="mt-2 text-center text-sm text-slate-600">Yakin ingin keluar? Jika dibatalkan, akun tetap masuk seperti semula.</p>
+            <div className="mt-6 flex gap-3"><button onClick={() => setShowLogoutConfirm(false)} className="flex-1 rounded-xl border border-slate-200 px-4 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50">Batal</button><button onClick={onLogout} className="flex-1 rounded-xl bg-rose-600 px-4 py-3 text-sm font-bold text-white hover:bg-rose-700">Ya, Keluar</button></div>
+          </div>
+        </div>
+      )}
       {/* =========================================================================
           PRISTINE APK APP BAR (TOP BAR)
          ========================================================================= */}
@@ -173,7 +184,7 @@ export const StudentDashboard: React.FC<StudentDashboardProps> = ({
               </div>
 
               <button
-                onClick={onLogout}
+                onClick={() => setShowLogoutConfirm(true)}
                 title="Keluar dari Akun Siswa"
                 className="px-3 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 hover:text-white border border-rose-400/30 text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
               >
