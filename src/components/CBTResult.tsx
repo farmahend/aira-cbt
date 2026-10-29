@@ -264,14 +264,14 @@ export const CBTResult: React.FC<CBTResultProps> = ({
                         {q.stimulusTitle || 'Stimulus Pernyataan:'}
                       </span>
                       <p className="line-clamp-4 text-slate-600 leading-relaxed">
-                        {q.stimulusText}
+                        <MathText text={q.stimulusText} />
                       </p>
                     </div>
 
                     {/* Question & Key */}
                     <div className="p-4 bg-purple-50/50 rounded-xl border border-purple-200 text-xs text-slate-800 space-y-2">
                       <span className="font-bold text-purple-950 block">Pertanyaan:</span>
-                      <p className="font-medium text-slate-900">{q.questionPrompt}</p>
+                      <p className="font-medium text-slate-900"><MathText text={q.questionPrompt} /></p>
                       
                       {q.type === 'pilihan_ganda' && (
                         <div className="pt-2 text-xs">
@@ -296,7 +296,7 @@ export const CBTResult: React.FC<CBTResultProps> = ({
                               Trik Cepat 15 Detik Mas Aira:
                             </span>
                             <p className="text-xs sm:text-sm text-purple-950 font-semibold mt-0.5 leading-relaxed">
-                              {q.fastTrick}
+                              <MathText text={q.fastTrick} />
                             </p>
                           </div>
                         </div>
@@ -308,7 +308,7 @@ export const CBTResult: React.FC<CBTResultProps> = ({
                           Pembahasan Konsep Mendalam:
                         </span>
                         <p className="text-xs sm:text-sm text-slate-700 leading-relaxed whitespace-pre-line">
-                          {q.explanation}
+                          <MathText text={q.explanation} />
                         </p>
                       </div>
 
