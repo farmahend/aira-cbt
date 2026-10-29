@@ -364,7 +364,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
         setCsvFeedback({
           show: true,
           success: true,
-          message: `Berhasil mengimpor ${result.questions.length} butir soal langsung ke ${selectedPackageForQuestions.title}!`
+          message: `Berhasil mengimpor ${result.questions.length} soal ke paket "${selectedPackageForQuestions.title}".${result.errors.length ? ` Catatan: ${result.errors.slice(0, 3).join(' | ')}${result.errors.length > 3 ? ` (dan ${result.errors.length - 3} catatan lainnya)` : ''}` : ''}`
         });
       } else {
         setCsvFeedback({
@@ -379,7 +379,14 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
       }, 5000);
     };
 
-    reader.readAsText(file);
+    reader.onerror = () => {
+      setCsvFeedback({
+        show: true,
+        success: false,
+        message: 'File CSV gagal dibaca. Coba simpan ulang sebagai CSV UTF-8 lalu impor kembali.'
+      });
+    };
+    reader.readAsText(file, 'UTF-8');
     if (csvFileInputRef.current) {
       csvFileInputRef.current.value = '';
     }
