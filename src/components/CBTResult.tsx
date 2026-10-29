@@ -15,6 +15,7 @@ import {
   ShieldCheck
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { MathText } from './MathText';
 
 interface CBTResultProps {
   result: ExamSessionResult;
