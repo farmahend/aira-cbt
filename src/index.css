@@ -94,3 +94,73 @@ html {
   .admin-portal .admin-header { border-radius: 1.25rem; padding: 1.25rem; }
   .math-text mjx-container { font-size: 100% !important; }
 }
+
+
+/* Aira CBT — professional UI refinement */
+:root {
+  --aira-ink: #172033;
+  --aira-muted: #64748b;
+  --aira-purple: #4c1d95;
+  --aira-purple-deep: #2e1065;
+  --aira-gold: #f5b82e;
+  --aira-border: #e5e7ef;
+  --aira-surface: #ffffff;
+}
+body {
+  color: var(--aira-ink);
+  background: #f7f8fc;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+button, a, input, select, textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+button { transition: color .18s ease, background-color .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid rgba(124, 58, 237, .28);
+  outline-offset: 3px;
+}
+.aira-main-header {
+  background: rgba(255,255,255,.92) !important;
+  border-bottom: 1px solid rgba(226, 232, 240, .9) !important;
+  box-shadow: 0 8px 30px -24px rgba(30, 27, 75, .38) !important;
+  backdrop-filter: blur(18px);
+}
+.aira-nav-inner > div { min-height: 76px; }
+.aira-main-header nav { gap: clamp(1rem, 2vw, 1.8rem) !important; }
+.aira-main-header nav button,
+.aira-main-header nav a { transition: color .18s ease, background-color .18s ease; }
+.aira-main-header nav button:hover,
+.aira-main-header nav a:hover { color: #6d28d9; }
+.aira-main-header .group > div:first-child {
+  box-shadow: 0 7px 18px -9px rgba(76, 29, 149, .55);
+}
+.aira-main-header button { border-radius: 12px; }
+.aira-main-header .absolute.right-0.mt-2 {
+  padding: .45rem;
+  border-color: #e8eaf2;
+  box-shadow: 0 20px 45px -18px rgba(15, 23, 42, .22);
+}
+.aira-main-header .absolute.right-0.mt-2 button { border-radius: 9px; padding-top: .7rem; padding-bottom: .7rem; }
+.admin-portal {
+  background: #f6f7fb;
+  background-image: radial-gradient(ellipse at 8% 0%, rgba(124,58,237,.055), transparent 34%), radial-gradient(ellipse at 92% 5%, rgba(245,184,46,.07), transparent 28%);
+}
+.admin-portal .admin-shell { width: 100%; }
+.admin-portal .admin-header {
+  border-radius: 22px !important;
+  box-shadow: 0 16px 38px -28px rgba(30, 27, 75, .65) !important;
+}
+.admin-portal [class*="rounded-2xl"][class*="bg-white"],
+.admin-portal [class*="rounded-xl"][class*="bg-white"] {
+  box-shadow: 0 2px 4px rgba(15, 23, 42, .025);
+}
+.admin-portal input, .admin-portal select, .admin-portal textarea {
+  border-color: #dbe1ec;
+  border-radius: 10px;
+}
+.admin-portal input:focus, .admin-portal select:focus, .admin-portal textarea:focus {
+  border-color: #a78bfa;
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, .10);
+}
+.admin-portal button:hover { filter: saturate(1.04); }
