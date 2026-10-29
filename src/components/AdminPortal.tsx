@@ -114,7 +114,6 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   const [pingStatus, setPingStatus] = useState<{
     midtrans?: { status: 'idle' | 'checking' | 'active' | 'error'; ms?: number; message?: string };
     cloudinary?: { status: 'idle' | 'checking' | 'active' | 'error'; ms?: number; message?: string };
-    supabase?: { status: 'idle' | 'checking' | 'active' | 'error'; ms?: number; message?: string };
   }>({});
 
   // Auto-activates and saves config immediately when admin modifies credentials
@@ -1328,7 +1327,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                   Pengaturan Server & Access Key Otomatis
                 </h2>
                 <p className="text-xs text-purple-200 max-w-2xl leading-relaxed">
-                  Setiap kali Anda memasukkan atau memperbarui Access Key Midtrans, Cloudinary, maupun Supabase, sistem akan <strong>langsung mengaktifkannya secara otomatis</strong> tanpa perlu restart server atau reload aplikasi.
+                  Setiap kali Anda memasukkan atau memperbarui Access Key Midtrans, Cloudinary, sistem akan <strong>menyimpan pengaturan yang diubah</strong> tanpa perlu restart server atau reload aplikasi.
                 </p>
               </div>
 
@@ -1370,7 +1369,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
               </div>
             )}
 
-            {/* 4 Integrations Cards Grid */}
+            {/* Integrasi layanan eksternal: Midtrans, Cloudinary, dan Cloudflare */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
               
               {/* 1. MIDTRANS PAYMENT GATEWAY */}
@@ -1526,81 +1525,6 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                     {pingStatus.cloudinary && (
                       <span className="text-[11px] font-bold text-emerald-700">
                         {pingStatus.cloudinary.message} ({pingStatus.cloudinary.ms}ms)
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* 3. SUPABASE DATABASE & REALTIME AUTH */}
-              <div className="p-5 bg-white rounded-2xl border-2 border-slate-200 hover:border-purple-300 transition-all shadow-xs space-y-4">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                  <div className="flex items-center gap-2 font-bold text-slate-900 text-sm">
-                    <div className="p-2 rounded-xl bg-emerald-100 text-emerald-900">
-                      <Database className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <span>Supabase Database & Realtime</span>
-                      <span className="text-[11px] text-slate-400 block font-normal">
-                        Penyimpanan Hasil Nilai Ujian CBT & Akun Siswa Terverifikasi
-                      </span>
-                    </div>
-                  </div>
-
-                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 ${
-                    localConfig.supabaseUrl
-                      ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                      : 'bg-amber-100 text-amber-800'
-                  }`}>
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span>{localConfig.supabaseUrl ? 'AKTIF OTOMATIS' : 'SIAP DIISI'}</span>
-                  </span>
-                </div>
-
-                <div className="space-y-3">
-                  <div>
-                    <label className="font-bold text-slate-700 block mb-1">
-                      Supabase Project URL *
-                    </label>
-                    <input
-                      type="text"
-                      value={localConfig.supabaseUrl}
-                      onChange={e => handleUpdateAndAutoActivateConfig({ supabaseUrl: e.target.value }, 'Supabase URL')}
-                      placeholder="https://xxxx.supabase.co"
-                      className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl font-mono text-xs focus:bg-white focus:border-purple-600 transition-colors"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="font-bold text-slate-700 block mb-1">
-                      Supabase Public Anon Key *
-                    </label>
-                    <input
-                      type="text"
-                      value={localConfig.supabaseAnonKey}
-                      onChange={e => handleUpdateAndAutoActivateConfig({ supabaseAnonKey: e.target.value }, 'Supabase Anon Key')}
-                      placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6..."
-                      className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl font-mono text-xs focus:bg-white focus:border-purple-600 transition-colors"
-                    />
-                  </div>
-
-                  <div className="p-2.5 bg-emerald-50 rounded-xl border border-emerald-200 text-[11px] text-emerald-900 leading-relaxed">
-                    Sistem menggunakan model <strong>Offline-First & Deferred Sync</strong>: CBT berjalan 100% cepat di HP/laptop siswa, dan perhitungan nilai baru disinkronkan otomatis ke database Supabase.
-                  </div>
-
-                  {/* Ping / Connection Tester */}
-                  <div className="pt-1 flex items-center justify-between">
-                    <button
-                      type="button"
-                      onClick={() => handleTestPing('supabase')}
-                      className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
-                    >
-                      <Wifi className="w-3.5 h-3.5 text-emerald-700" />
-                      <span>Uji Ping REST Database Supabase</span>
-                    </button>
-                    {pingStatus.supabase && (
-                      <span className="text-[11px] font-bold text-emerald-700">
-                        {pingStatus.supabase.message} ({pingStatus.supabase.ms}ms)
                       </span>
                     )}
                   </div>
