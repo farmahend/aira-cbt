@@ -52,7 +52,8 @@ import {
   Tag,
   Percent,
   Activity,
-  RefreshCw
+  RefreshCw,
+  LogOut
 } from 'lucide-react';
 
 interface AdminPortalProps {
@@ -88,6 +89,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
 }) => {
   // Main Tab State
   const [activeTab, setActiveTab] = useState<'paket' | 'tampilan' | 'integrasi'>('paket');
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [selectedGradeFilter, setSelectedGradeFilter] = useState<GradeLevel>('SEMUA');
   const [salesTypeFilter, setSalesTypeFilter] = useState<'ALL' | 'satuan' | 'bundle'>('ALL');
 
@@ -404,6 +406,16 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   return (
     <div className="admin-portal min-h-screen bg-slate-50 py-7 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="admin-shell max-w-7xl mx-auto space-y-7">
+        {showLogoutConfirm && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/70 p-4" role="dialog" aria-modal="true" aria-labelledby="admin-logout-title">
+            <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-100 text-rose-600"><LogOut className="h-7 w-7" /></div>
+              <h2 id="admin-logout-title" className="text-center text-xl font-black text-slate-900">Keluar dari Admin?</h2>
+              <p className="mt-2 text-center text-sm text-slate-600">Yakin ingin mengakhiri sesi admin dan kembali ke halaman utama?</p>
+              <div className="mt-6 flex gap-3"><button onClick={() => setShowLogoutConfirm(false)} className="flex-1 rounded-xl border border-slate-200 px-4 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50">Batal</button><button onClick={onExitAdmin} className="flex-1 rounded-xl bg-rose-600 px-4 py-3 text-sm font-bold text-white hover:bg-rose-700">Ya, Keluar</button></div>
+            </div>
+          </div>
+        )}
         
         {/* Top Navigation Bar */}
         <div className="admin-header bg-gradient-to-r from-slate-950 via-indigo-950 to-purple-950 rounded-[1.75rem] p-6 sm:p-8 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6 border-b-4 border-amber-400">
@@ -422,11 +434,11 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
 
           <div className="flex items-center gap-3 shrink-0">
             <button
-              onClick={onExitAdmin}
-              className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm border border-white/20 transition-all flex items-center gap-2"
+              onClick={() => setShowLogoutConfirm(true)}
+              className="px-4 py-2.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs sm:text-sm border border-rose-300/40 transition-all flex items-center gap-2"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>Kembali ke Website</span>
+              <span><LogOut className="w-4 h-4" /> Keluar</span>
             </button>
           </div>
         </div>
