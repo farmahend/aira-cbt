@@ -54,9 +54,9 @@ export const MidtransModal: React.FC<MidtransModalProps> = ({
   if (!isOpen || !packageItem) return null;
 
   const vaNumbers = {
-    va_bca: '89102-0812-9921-3829',
-    va_mandiri: '88721-0091-2391-4820',
-    va_bri: '10293-8192-3847-1920'
+    va_bca: 'Belum tersedia — gateway belum terhubung',
+    va_mandiri: 'Belum tersedia — gateway belum terhubung',
+    va_bri: 'Belum tersedia — gateway belum terhubung'
   };
 
   const handleCopy = (text: string) => {
@@ -254,81 +254,11 @@ export const MidtransModal: React.FC<MidtransModalProps> = ({
             </div>
 
             {/* Instruction detail based on method */}
-            {selectedMethod === 'qris' ? (
-              <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-center space-y-3">
-                <div className="inline-block p-3 bg-white rounded-xl shadow-xs border border-slate-200">
-                  <div className="w-44 h-44 bg-slate-900 rounded-lg p-2 flex flex-col items-center justify-center text-white relative">
-                    <QrCode className="w-36 h-36 text-white" />
-                    <span className="absolute bottom-1 bg-amber-400 text-purple-950 font-bold text-[9px] px-1.5 py-0.5 rounded">
-                      QRIS AIRA BIMBEL
-                    </span>
-                  </div>
-                </div>
-                <p className="text-xs text-slate-600">
-                  Scan kode QRIS di atas menggunakan aplikasi m-Banking atau e-Wallet apa saja.
-                </p>
-              </div>
-            ) : (
-              <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
-                <span className="text-xs text-slate-500">Nomor Virtual Account:</span>
-                <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-slate-300 font-mono text-sm font-bold text-slate-900">
-                  <span>{vaNumbers[selectedMethod]}</span>
-                  <button
-                    onClick={() => handleCopy(vaNumbers[selectedMethod])}
-                    className="p-1 text-purple-700 hover:text-purple-900 flex items-center gap-1 text-xs"
-                  >
-                    {copied ? <CheckCircle className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
-                    <span>{copied ? 'Tersalin' : 'Salin'}</span>
-                  </button>
-                </div>
-                <p className="text-[11px] text-slate-500">
-                  Transfer tepat sesuai nominal: <strong>{formatRupiah(packageItem.price)}</strong> tanpa kode unik tambahan.
-                </p>
-              </div>
-            )}
-
-            {/* Midtrans Simulation Trigger */}
-            <div className="pt-2">
-              <button
-                type="button"
-                disabled={isProcessing}
-                onClick={handleSimulatePayment}
-                className="w-full py-3.5 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-50"
-              >
-                {isProcessing ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    <span>Menghubungi Midtrans Server & Mengaktifkan Paket...</span>
-                  </>
-                ) : (
-                  <>
-                    <ShieldCheck className="w-5 h-5 text-emerald-200" />
-                    <span>Periksa Status Pembayaran (belum tersedia)</span>
-                  </>
-                )}
-              </button>
-              <p className="text-[11px] text-center text-slate-400 mt-2">
-                *Pembayaran baru dapat dikonfirmasi setelah integrasi Midtrans server-side dan verifikasi webhook aktif.
-              </p>
-            </div>
-
-          </div>
-        ) : (
-          /* Payment Success Confirmation */
-          <div className="p-8 text-center space-y-5">
-            <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-sm">
-              <CheckCircle className="w-10 h-10 text-emerald-600" />
-            </div>
-
-            <div>
-              <span className="inline-block px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold uppercase mb-1">
-                Pembayaran Terkonfirmasi
-              </span>
-              <h3 className="text-xl font-extrabold text-slate-900">
-                Selamat! Paket Belajar Aktif 60 Hari
-              </h3>
-              <p className="text-xs text-slate-600 mt-1">
-                Order ID: <strong className="font-mono text-purple-900">{confirmedOrderId}</strong>
+            <div role="status" className="p-4 bg-amber-50 rounded-xl border border-amber-200 text-center space-y-2">
+              <ShieldCheck className="w-8 h-8 text-amber-700 mx-auto" />
+              <p className="text-sm font-bold text-amber-900">Gateway pembayaran belum aktif</p>
+              <p className="text-xs text-amber-800">
+                Kode QRIS dan nomor Virtual Account asli hanya boleh ditampilkan setelah server membuat transaksi melalui Midtrans. Jangan melakukan transfer ke nomor contoh.
               </p>
             </div>
 
