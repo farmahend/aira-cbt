@@ -50,7 +50,6 @@ import {
   Tag,
   Percent,
   Activity,
-  Wifi,
   RefreshCw
 } from 'lucide-react';
 
@@ -111,11 +110,6 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   const [configSavedToast, setConfigSavedToast] = useState(false);
   const [liveAutoSavePill, setLiveAutoSavePill] = useState<string | null>(null);
 
-  const [pingStatus, setPingStatus] = useState<{
-    midtrans?: { status: 'idle' | 'checking' | 'active' | 'error'; ms?: number; message?: string };
-    cloudinary?: { status: 'idle' | 'checking' | 'active' | 'error'; ms?: number; message?: string };
-  }>({});
-
   // Auto-activates and saves config immediately when admin modifies credentials
   const handleUpdateAndAutoActivateConfig = (updates: Partial<IntegrationConfig>, serviceName?: string) => {
     const updated: IntegrationConfig = {
@@ -134,45 +128,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
     }
   };
 
-  const handleTestPing = (service: 'midtrans' | 'cloudinary' | 'supabase') => {
-    setPingStatus(prev => ({
-      ...prev,
-      [service]: { status: 'checking', message: 'Menguji koneksi server...' }
-    }));
 
-    setTimeout(() => {
-      const simulatedMs = Math.floor(Math.random() * 25) + 18;
-      if (service === 'midtrans') {
-        const isProd = localConfig.midtransEnvironment === 'production';
-        setPingStatus(prev => ({
-          ...prev,
-          midtrans: {
-            status: 'active',
-            ms: simulatedMs,
-            message: `200 OK • Snap Gateway Terhubung (${isProd ? 'Production Live' : 'Sandbox Ready'})`
-          }
-        }));
-      } else if (service === 'cloudinary') {
-        setPingStatus(prev => ({
-          ...prev,
-          cloudinary: {
-            status: 'active',
-            ms: simulatedMs,
-            message: `200 OK • Cloudinary CDN Direct Upload Aktif (${localConfig.cloudinaryCloudName || 'airabimbel-cdn'})`
-          }
-        }));
-      } else if (service === 'supabase') {
-        setPingStatus(prev => ({
-          ...prev,
-          supabase: {
-            status: 'active',
-            ms: simulatedMs,
-            message: `200 OK • Supabase REST Sync Engine Siap Sinkronisasi`
-          }
-        }));
-      }
-    }, 700);
-  };
 
   // CSV Import State
   const csvFileInputRef = useRef<HTMLInputElement>(null);
@@ -1437,22 +1393,6 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                     </select>
                   </div>
 
-                  {/* Ping / Connection Tester */}
-                  <div className="pt-2 flex items-center justify-between">
-                    <button
-                      type="button"
-                      onClick={() => handleTestPing('midtrans')}
-                      className="px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-900 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
-                    >
-                      <Wifi className="w-3.5 h-3.5 text-purple-700" />
-                      <span>Uji Ping Snap Midtrans</span>
-                    </button>
-                    {pingStatus.midtrans && (
-                      <span className="text-[11px] font-bold text-emerald-700">
-                        {pingStatus.midtrans.message} ({pingStatus.midtrans.ms}ms)
-                      </span>
-                    )}
-                  </div>
                 </div>
               </div>
 
@@ -1512,22 +1452,6 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                     Setiap upload gambar pada pembuatan soal langsung terunggah ke Cloudinary CDN tanpa membebani memori lokal server.
                   </div>
 
-                  {/* Ping / Connection Tester */}
-                  <div className="pt-1 flex items-center justify-between">
-                    <button
-                      type="button"
-                      onClick={() => handleTestPing('cloudinary')}
-                      className="px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
-                    >
-                      <Wifi className="w-3.5 h-3.5 text-amber-700" />
-                      <span>Uji Koneksi CDN Cloudinary</span>
-                    </button>
-                    {pingStatus.cloudinary && (
-                      <span className="text-[11px] font-bold text-emerald-700">
-                        {pingStatus.cloudinary.message} ({pingStatus.cloudinary.ms}ms)
-                      </span>
-                    )}
-                  </div>
                 </div>
               </div>
 
