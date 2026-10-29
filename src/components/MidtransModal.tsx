@@ -32,6 +32,7 @@ export const MidtransModal: React.FC<MidtransModalProps> = ({
   const [copied, setCopied] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [paymentError, setPaymentError] = useState('');
   const [confirmedOrderId, setConfirmedOrderId] = useState('');
   const [timeLeft, setTimeLeft] = useState(900); // 15 mins
   const config = getStoredConfig();
@@ -71,17 +72,10 @@ export const MidtransModal: React.FC<MidtransModalProps> = ({
   };
 
   const handleSimulatePayment = () => {
-    setIsProcessing(true);
-    setTimeout(() => {
-      const sub = addSubscription(
-        packageItem,
-        selectedMethod.toUpperCase().replace('_', ' ')
-      );
-      setConfirmedOrderId(sub.orderId);
-      setIsProcessing(false);
-      setIsSuccess(true);
-      onPaymentSuccess(sub.id);
-    }, 1200);
+    setIsProcessing(false);
+    setPaymentError(
+      'Pembayaran belum terhubung ke Midtrans asli. Paket tidak diaktifkan agar transaksi palsu tidak dianggap lunas.'
+    );
   };
 
   return (
@@ -309,12 +303,12 @@ export const MidtransModal: React.FC<MidtransModalProps> = ({
                 ) : (
                   <>
                     <ShieldCheck className="w-5 h-5 text-emerald-200" />
-                    <span>Simulasikan Pembayaran Sukses (Auto-Active 60 Hari)</span>
+                    <span>Periksa Status Pembayaran (belum tersedia)</span>
                   </>
                 )}
               </button>
               <p className="text-[11px] text-center text-slate-400 mt-2">
-                *Demo payment simulator: Menguji webhook callback otomatis Midtrans & pembukaan akses CBT 60 hari.
+                *Pembayaran baru dapat dikonfirmasi setelah integrasi Midtrans server-side dan verifikasi webhook aktif.
               </p>
             </div>
 
@@ -356,6 +350,12 @@ export const MidtransModal: React.FC<MidtransModalProps> = ({
                 <span className="font-black text-slate-900">{formatRupiah(packageItem.price)}</span>
               </div>
             </div>
+
+            {paymentError && (
+              <div role="alert" className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-xs font-semibold text-amber-900">
+                {paymentError}
+              </div>
+            )}
 
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <button
