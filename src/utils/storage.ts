@@ -377,14 +377,14 @@ export function getStoredConfig(): IntegrationConfig {
       localStorage.setItem(STORAGE_KEYS.CONFIG, JSON.stringify(INITIAL_CONFIG));
       return INITIAL_CONFIG;
     }
-    return { ...INITIAL_CONFIG, ...JSON.parse(raw) };
+    return { ...INITIAL_CONFIG, ...JSON.parse(raw), midtransServerKey: '' };
   } catch {
     return INITIAL_CONFIG;
   }
 }
 
 export function saveStoredConfig(config: IntegrationConfig): void {
-  localStorage.setItem(STORAGE_KEYS.CONFIG, JSON.stringify(config));
+  // Never persist Midtrans Server Key in browser storage, even if an older config contains one.\n  localStorage.setItem(STORAGE_KEYS.CONFIG, JSON.stringify({ ...config, midtransServerKey: '' }));
 }
 
 // Landing Page Content
