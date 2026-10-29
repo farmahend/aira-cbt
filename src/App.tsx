@@ -154,6 +154,51 @@ export default function App() {
   const [exams, setExams] = useState<Exam[]>(getStoredExams());
   const [packages, setPackages] = useState<PackageItem[]>(getStoredPackages());
   const [subscriptions, setSubscriptions] = useState<StudentSubscription[]>(getStoredSubscriptions());
+  const [subscriptionRefreshKey, setSubscriptionRefreshKey] = useState(0);
+
+  // Pull authoritative paid subscriptions from Supabase for the logged-in Supabase OAuth session.
+  React.useEffect(() => {
+    if (!currentUser || currentUser.role !== 'customer') return;
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
+    const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+    const accessToken = localStorage.getItem('aira_supabase_access_token');
+    if (!supabaseUrl || !anonKey || !accessToken) return;
+
+    let cancelled = false;
+    const loadPurchases = async () => {
+      try {
+        const response = await fetch(
+          `${supabaseUrl.replace(/\\/$/, '')}/rest/v1/package_purchases?select=id,package_id,order_id,amount,payment_status,purchased_at,expires_at,created_at&order=user_id.asc`,
+          { headers: { apikey: anonKey, Authorization: `Bearer ${accessToken}` } }
+        );
+        if (!response.ok) return;
+        const rows: Array<{ id: string; package_id: string; order_id: string; amount: number; payment_status: string; purchased_at: string | null; expires_at: string | null; created_at: string }> = await response.json();
+        const paidRows = rows.filter(row => ['settlement', 'capture'].includes(row.payment_status) && row.purchased_at && row.expires_at);
+        const synced: StudentSubscription[] = paidRows.map(row => {
+          const pkg = packages.find(item => item.id === row.package_id);
+          const expiresAt = row.expires_at as string;
+          return {
+            id: row.id,
+            userId: currentUser.id,
+            packageId: row.package_id,
+            packageName: pkg?.title || row.package_id,
+            grade: pkg?.grade || 'SEMUA',
+            purchasedAt: row.purchased_at as string,
+            expiresAt,
+            orderId: row.order_id,
+            amount: Number(row.amount),
+            paymentMethod: 'Midtrans',
+            status: new Date(expiresAt).getTime() > Date.now() ? 'active' : 'expired'
+          };
+        });
+        if (!cancelled) setSubscriptions(synced);
+      } catch (error) {
+        console.error('Gagal memuat masa aktif paket dari Supabase:', error);
+      }
+    };
+    void loadPurchases();
+    return () => { cancelled = true; };
+  }, [currentUser?.id, currentUser?.role, packages, subscriptionRefreshKey]);
   const [pastResults, setPastResults] = useState<ExamSessionResult[]>(getStoredResults());
   const [config, setConfig] = useState<IntegrationConfig>(getStoredConfig());
   const [landingContent, setLandingContent] = useState<LandingPageContent>(getStoredLandingContent());
@@ -332,7 +377,7 @@ export default function App() {
   };
 
   const handlePaymentSuccess = () => {
-    setSubscriptions(getStoredSubscriptions());
+    setSubscriptionRefreshKey(value => value + 1);
   };
 
   // Navigation Guard for Public Navbar
