@@ -143,13 +143,6 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
 
       </div>
 
-          <button
-            type="button"
-            onClick={handleQuickUnlock}
-            className="px-3 py-1 rounded-lg bg-purple-900/60 hover:bg-purple-800 text-amber-300 font-mono text-[11px] font-bold border border-purple-500/40 transition-colors"
-          >
-            Buka Cepat Admin (Mas Aira)
-          </button>
         </div>
 
       </div>
