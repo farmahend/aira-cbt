@@ -40,73 +40,9 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
 
   const handleAdminSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMessage('');
-
-    if (!email.trim() || !password.trim()) {
-      setErrorMessage('Harap isi alamat email dan kata sandi administrator.');
-      return;
-    }
-
-    // Security PIN verification (Default PIN: 8899 atau AIRA2026)
-    if (securityPin.trim() && securityPin.trim() !== '8899' && securityPin.trim().toUpperCase() !== 'AIRA2026') {
-      setErrorMessage('PIN Keamanan Master salah. Akses ditolak.');
-      setAttempts(prev => prev + 1);
-      return;
-    }
-
-    setIsLoading(true);
-
-    setTimeout(() => {
-      const users = getStoredUsers();
-      const matchedAdmin = users.find(
-        u => u.email.toLowerCase() === email.toLowerCase().trim() && u.role === 'admin'
-      );
-
-      // Verify credentials or fallback to default admin credentials
-      if (
-        matchedAdmin ||
-        (email.toLowerCase().includes('admin') && password === 'admin123') ||
-        (email === 'admin@airabimbel.com')
-      ) {
-        const authenticatedAdmin: AuthUser = matchedAdmin || {
-          id: 'user-admin-01',
-          name: 'Mas Aira (Super Admin)',
-          email: email.trim(),
-          role: 'admin',
-          phone: '+62 812-3456-7890',
-          avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
-          createdAt: new Date().toISOString()
-        };
-
-        saveStoredCurrentUser(authenticatedAdmin);
-        setIsLoading(false);
-        onAdminLoginSuccess(authenticatedAdmin);
-      } else {
-        setIsLoading(false);
-        setAttempts(prev => prev + 1);
-        setErrorMessage('Autentikasi gagal. Akun administrator tidak terdaftar atau kredensial salah.');
-      }
-    }, 600);
-  };
-
-  const handleQuickUnlock = () => {
-    setIsLoading(true);
-    setErrorMessage('');
-    setTimeout(() => {
-      const users = getStoredUsers();
-      const admin = users.find(u => u.role === 'admin') || {
-        id: 'user-admin-01',
-        name: 'Mas Aira (Super Admin)',
-        email: 'admin@airabimbel.com',
-        role: 'admin',
-        phone: '+62 812-3456-7890',
-        avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
-        createdAt: new Date().toISOString()
-      };
-      saveStoredCurrentUser(admin);
-      setIsLoading(false);
-      onAdminLoginSuccess(admin);
-    }, 400);
+    setErrorMessage(
+      'Login administrator belum aman: autentikasi server belum dikonfigurasi. Akses ditahan agar akun tidak bisa dibobol melalui kredensial demo.'
+    );
   };
 
   return (
@@ -195,8 +131,8 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
 
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="font-bold text-purple-200">PIN Keamanan 2FA (Opsional)</label>
-              <span className="text-[10px] text-amber-400 font-mono">Default: 8899</span>
+              <label className="font-bold text-purple-200">PIN Keamanan (belum aktif)</label>
+              <span className="text-[10px] text-amber-400 font-mono">Wajib diatur di server</span>
             </div>
             <div className="relative">
               <KeyRound className="w-4 h-4 text-amber-400 absolute left-3 top-3 pointer-events-none" />
@@ -229,22 +165,6 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
           </div>
 
         </form>
-
-        {/* Quick Testing Unlock for Developers / Owner */}
-        <div className="p-4 bg-slate-950 border-t border-purple-500/20 flex items-center justify-between text-xs">
-          <div className="flex items-center gap-1.5 text-slate-400 text-[11px]">
-            <Fingerprint className="w-3.5 h-3.5 text-purple-400" />
-            <span>Kredensial Pengembang:</span>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleQuickUnlock}
-            className="px-3 py-1 rounded-lg bg-purple-900/60 hover:bg-purple-800 text-amber-300 font-mono text-[11px] font-bold border border-purple-500/40 transition-colors"
-          >
-            Buka Cepat Admin (Mas Aira)
-          </button>
-        </div>
 
       </div>
     </div>
