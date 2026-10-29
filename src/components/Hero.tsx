@@ -10,7 +10,7 @@ interface HeroProps {
 
 export const Hero: React.FC<HeroProps> = ({ onStartDemo, onExplorePackages, content }) => {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-purple-50/70 via-white to-slate-50 pt-8 pb-16 lg:pt-14 lg:pb-24 border-b border-purple-100">
+    <section className="aira-hero relative overflow-hidden bg-gradient-to-b from-purple-50/70 via-white to-slate-50 pt-8 pb-16 lg:pt-14 lg:pb-24 border-b border-purple-100">
       {/* Subtle brand ambient glow */}
       <div className="absolute top-0 right-1/4 w-96 h-96 bg-purple-200/40 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute top-20 left-10 w-72 h-72 bg-amber-200/40 rounded-full blur-3xl pointer-events-none" />
