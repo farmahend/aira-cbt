@@ -1389,17 +1389,9 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                     />
                   </div>
 
-                  <div>
-                    <label className="font-bold text-slate-700 block mb-1">
-                      Midtrans Server Key (Otomatis Aktif untuk Transaksi) *
-                    </label>
-                    <input
-                      type="password"
-                      value={localConfig.midtransServerKey}
-                      onChange={e => handleUpdateAndAutoActivateConfig({ midtransServerKey: e.target.value }, 'Midtrans Server Key')}
-                      placeholder="SB-Mid-server-xxxx atau Mid-server-xxxx"
-                      className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl font-mono text-xs focus:bg-white focus:border-purple-600 transition-colors"
-                    />
+                  <div className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-amber-950">
+                    <p className="font-bold">Server Key wajib disimpan sebagai secret di Supabase</p>
+                    <p className="mt-1 leading-relaxed">Jangan masukkan Server Key di halaman admin/browser. Atur MIDTRANS_SERVER_KEY dan MIDTRANS_CLIENT_KEY di Supabase Edge Function Secrets. Key rahasia tidak disimpan di localStorage.</p>
                   </div>
 
                   <div>
