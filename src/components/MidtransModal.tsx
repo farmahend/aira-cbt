@@ -107,8 +107,7 @@ export const MidtransModal: React.FC<MidtransModalProps> = ({
         </div>
 
         {/* Content */}
-        {!isSuccess ? (
-          <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6">
             
             {/* Order Summary & 60-day reminder */}
             <div className="p-4 bg-purple-50 rounded-xl border border-purple-100 flex items-center justify-between">
@@ -297,8 +296,7 @@ export const MidtransModal: React.FC<MidtransModalProps> = ({
               </button>
             </div>
 
-          </div>
-        )}
+        </div>
 
       </div>
     </div>
