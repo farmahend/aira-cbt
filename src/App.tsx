@@ -48,6 +48,53 @@ export default function App() {
   const initialUser = getStoredCurrentUser();
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(initialUser);
 
+  // Complete Supabase OAuth callback after Google redirects back to this site.
+  React.useEffect(() => {
+    const hash = window.location.hash;
+    if (!hash || !hash.includes('access_token=')) return;
+    const params = new URLSearchParams(hash.replace(/^#/, ''));
+    const accessToken = params.get('access_token');
+    const authError = params.get('error_description') || params.get('error');
+    if (authError) {
+      window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
+      console.error('Supabase Google OAuth error:', authError);
+      return;
+    }
+    if (!accessToken) return;
+
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
+    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+    if (!supabaseUrl || !supabaseAnonKey) return;
+
+    window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
+    localStorage.setItem('aira_supabase_access_token', accessToken);
+    fetch(`${supabaseUrl.replace(/\\/$/, '')}/auth/v1/user`, {
+      headers: { apikey: supabaseAnonKey, Authorization: `Bearer ${accessToken}` }
+    })
+      .then(async response => {
+        if (!response.ok) throw new Error('Gagal memverifikasi akun Google di Supabase.');
+        return response.json();
+      })
+      .then((profile: { id: string; email?: string; user_metadata?: { full_name?: string; name?: string; avatar_url?: string; picture?: string } }) => {
+        const name = profile.user_metadata?.full_name || profile.user_metadata?.name || profile.email?.split('@')[0] || 'Siswa';
+        const user: AuthUser = {
+          id: profile.id,
+          name,
+          email: profile.email || '',
+          role: 'customer',
+          grade: 'SMP',
+          avatarUrl: profile.user_metadata?.avatar_url || profile.user_metadata?.picture || ''
+        } as AuthUser;
+        saveStoredCurrentUser(user);
+        setCurrentUser(user);
+        setCurrentView('dashboard');
+      })
+      .catch(error => {
+        console.error('Supabase Google OAuth callback failed:', error);
+        localStorage.removeItem('aira_supabase_access_token');
+      });
+  }, []);
+
   // Navigation View State: strictly dynamic based on authenticated user
   const [currentView, setCurrentView] = useState<
     'home' | 'demo' | 'dashboard' | 'admin' | 'cbt' | 'cbt_result'
