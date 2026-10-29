@@ -48,6 +48,15 @@ export default function App() {
   const initialUser = getStoredCurrentUser();
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(initialUser);
 
+  // Restore the persisted login on every page load/reload. The session ends only
+  // when the user explicitly chooses Logout; localStorage survives browser reloads.
+  React.useEffect(() => {
+    const savedUser = getStoredCurrentUser();
+    if (!savedUser) return;
+    setCurrentUser(savedUser);
+    setCurrentView(savedUser.role === 'admin' ? 'admin' : 'dashboard');
+  }, []);
+
   // Complete Supabase OAuth callback after Google redirects back to this site.
   React.useEffect(() => {
     const hash = window.location.hash;
@@ -101,7 +110,7 @@ export default function App() {
       })
       .catch(error => {
         console.error('Supabase Google OAuth callback failed:', error);
-        localStorage.removeItem('aira_supabase_access_token');
+        // Keep the persisted user session; transient profile/network errors must not log the user out.
       });
   }, []);
 
