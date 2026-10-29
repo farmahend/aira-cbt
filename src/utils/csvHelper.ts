@@ -191,12 +191,12 @@ export function parseQuestionsFromCSV(csvString: string): {
   errors: string[];
 } {
   try {
-    const cleanCsv = String(csvString || '').replace(/^\\uFEFF/, '');
+    const cleanCsv = String(csvString || '').replace(/^\uFEFF/, '');
     const parsed = Papa.parse<Record<string, string>>(cleanCsv, {
       header: true,
       skipEmptyLines: 'greedy',
       dynamicTyping: false,
-      transformHeader: (header) => header.replace(/^\\uFEFF/, '').trim().toLowerCase(),
+      transformHeader: (header) => header.replace(/^\uFEFF/, '').trim().toLowerCase(),
       transform: (value) => typeof value === 'string' ? value.trim() : value
     });
 
