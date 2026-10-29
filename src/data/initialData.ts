@@ -498,12 +498,12 @@ export const INITIAL_EXAMS: Exam[] = INITIAL_PACKAGES.map(pkg => ({
 }));
 
 export const INITIAL_CONFIG: IntegrationConfig = {
-  midtransClientKey: 'SB-Mid-client-AiraBimbel2026ExKey',
-  midtransServerKey: 'SB-Mid-server-SecretAiraKeyDev998',
+  midtransClientKey: '',
+  midtransServerKey: '',
   midtransEnvironment: 'sandbox',
   midtransAutoActive: true,
   supabaseUrl: 'https://ixoxdtqntaeccgl22cvodh.supabase.co',
-  supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.airabimbel-anon-key-mock',
+  supabaseAnonKey: '',
   supabaseAutoActive: true,
   cloudinaryCloudName: 'airabimbel-cdn',
   cloudinaryUploadPreset: 'aira_soal_tka',
