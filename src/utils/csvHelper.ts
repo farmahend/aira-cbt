@@ -191,27 +191,34 @@ export function parseQuestionsFromCSV(csvString: string): {
   errors: string[];
 } {
   try {
-    const parsed = Papa.parse(csvString, {
+    const cleanCsv = String(csvString || '').replace(/^\\uFEFF/, '');
+    const parsed = Papa.parse<Record<string, string>>(cleanCsv, {
       header: true,
-      skipEmptyLines: true,
-      dynamicTyping: false
+      skipEmptyLines: 'greedy',
+      dynamicTyping: false,
+      transformHeader: (header) => header.replace(/^\\uFEFF/, '').trim().toLowerCase(),
+      transform: (value) => typeof value === 'string' ? value.trim() : value
     });
 
-    if (parsed.errors && parsed.errors.length > 0 && parsed.data.length === 0) {
-      return {
-        success: false,
-        questions: [],
-        errors: parsed.errors.map(e => `Baris ${e.row}: ${e.message}`)
-      };
-    }
-
     const questions: Question[] = [];
-    const errors: string[] = [];
+    const errors: string[] = (parsed.errors || []).map(e => `Baris ${(e.row ?? 0) + 2}: ${e.message}`);
+    if (!parsed.meta.fields || parsed.meta.fields.length === 0) {
+      return { success: false, questions: [], errors: ['Header CSV tidak ditemukan. Unduh template terbaru dari dashboard admin.'] };
+    }
+    const requiredHeaders = ['question_prompt'];
+    const missingHeaders = requiredHeaders.filter(header => !parsed.meta.fields?.includes(header) && !parsed.meta.fields?.includes('prompt'));
+    if (missingHeaders.length) {
+      return { success: false, questions: [], errors: [`Kolom wajib tidak ditemukan: ${missingHeaders.join(', ')}.`] };
+    }
 
     parsed.data.forEach((row: any, idx: number) => {
       const lineNum = idx + 2;
-      const grade = (row.grade || 'SMA').toUpperCase().trim() as 'SD' | 'SMP' | 'SMA';
-      const type = (row.type || 'pilihan_ganda').trim().toLowerCase() as QuestionType;
+      const grade = String(row.grade || 'SMA').toUpperCase().trim() as 'SD' | 'SMP' | 'SMA';
+      const type = String(row.type || 'pilihan_ganda').trim().toLowerCase() as QuestionType;
+      const validGrades = ['SD', 'SMP', 'SMA'];
+      const validTypes = ['pilihan_ganda', 'pilihan_ganda_kompleks', 'menjodohkan', 'benar_salah'];
+      if (!validGrades.includes(grade)) errors.push(`Baris ${lineNum}: grade "${grade}" tidak dikenal; digunakan SMA.`);
+      if (!validTypes.includes(type)) errors.push(`Baris ${lineNum}: tipe soal "${type}" tidak dikenal; digunakan pilihan_ganda.`);
       const subject = (row.subject || 'Penalaran TKA').trim();
       const prompt = (row.question_prompt || row.prompt || '').trim();
 
@@ -257,7 +264,9 @@ export function parseQuestionsFromCSV(csvString: string): {
         const rawMatching = (row.matching_pairs || '').trim();
         if (rawMatching) {
           matchingPairs = rawMatching.split('|').map((pairStr: string, pIdx: number) => {
-            const [l, r] = pairStr.split(':');
+            const separator = pairStr.indexOf(':');
+            const l = separator >= 0 ? pairStr.slice(0, separator) : pairStr;
+            const r = separator >= 0 ? pairStr.slice(separator + 1) : '';
             return {
               id: `${qId}_m_${pIdx}`,
               left: (l || `Premis ${pIdx + 1}`).trim(),
@@ -273,8 +282,10 @@ export function parseQuestionsFromCSV(csvString: string): {
         const rawTF = (row.true_false_items || '').trim();
         if (rawTF) {
           trueFalseItems = rawTF.split('|').map((itemStr: string, tfIdx: number) => {
-            const [stat, val] = itemStr.split(':');
-            const isTrue = (val || '').toUpperCase().includes('BENAR') || (val || '').toUpperCase().includes('TRUE');
+            const separator = itemStr.lastIndexOf(':');
+            const stat = separator >= 0 ? itemStr.slice(0, separator) : itemStr;
+            const val = separator >= 0 ? itemStr.slice(separator + 1) : '';
+            const isTrue = ['BENAR', 'TRUE', '1', 'YA'].includes((val || '').trim().toUpperCase());
             return {
               id: `${qId}_tf_${tfIdx}`,
               statement: (stat || `Pernyataan ${tfIdx + 1}`).trim(),
@@ -311,7 +322,7 @@ export function parseQuestionsFromCSV(csvString: string): {
     return {
       success: questions.length > 0,
       questions,
-      errors
+      errors: questions.length === 0 && errors.length === 0 ? ['Tidak ada soal valid di dalam file CSV.'] : errors
     };
   } catch (err: any) {
     return {
