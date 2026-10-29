@@ -68,7 +68,7 @@ export default function App() {
 
     window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
     localStorage.setItem('aira_supabase_access_token', accessToken);
-    fetch(`${supabaseUrl.replace(/\\/$/, '')}/auth/v1/user`, {
+    fetch(`${supabaseUrl.replace(/\/$/, '')}/auth/v1/user`, {
       headers: { apikey: supabaseAnonKey, Authorization: `Bearer ${accessToken}` }
     })
       .then(async response => {
