@@ -168,7 +168,7 @@ export default function App() {
     const loadPurchases = async () => {
       try {
         const response = await fetch(
-          `${supabaseUrl.replace(/\\/$/, '')}/rest/v1/package_purchases?select=id,package_id,order_id,amount,payment_status,purchased_at,expires_at,created_at&order=user_id.asc`,
+          `${supabaseUrl.replace(/\/$/, '')}/rest/v1/package_purchases?select=id,package_id,order_id,amount,payment_status,purchased_at,expires_at,created_at&order=user_id.asc`,
           { headers: { apikey: anonKey, Authorization: `Bearer ${accessToken}` } }
         );
         if (!response.ok) return;
